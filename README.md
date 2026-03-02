@@ -2,85 +2,39 @@
 
   <h1>STMNA Desk</h1>
   <h3>Sovereign AI Workstation Stack</h3>
-  <p><em>Run frontier-class AI models locally on AMD hardware. 100% sovereign, zero cloud.</em></p>
+  <p><em>Local inference, automated pipelines, voice transcription. All on hardware you own.</em></p>
 
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-  [![Built on AMD](https://img.shields.io/badge/Built%20on-AMD%20Strix%20Halo-ED1C24)](https://www.amd.com)
+  [![AMD Strix Halo](https://img.shields.io/badge/AMD-Ryzen%20AI%20Max%2B%20395-ED1C24)](https://www.amd.com)
   [![Ubuntu 24.04](https://img.shields.io/badge/Ubuntu-24.04%20LTS-E95420)](https://ubuntu.com)
   [![Rootless Podman](https://img.shields.io/badge/Containers-Rootless%20Podman-892CA0)](https://podman.io)
   ![Status](https://img.shields.io/badge/Status-Live-brightgreen)
 
   <br/>
 
-  [📖 Docs](#documentation) · [🚀 Quick Start](#quick-start) · [🏗️ Architecture](#architecture) · [🤝 Contributing](#contributing)
+  [Architecture](#architecture) · [Performance](#performance) · [Guides](#guides) · [Ecosystem](#ecosystem)
 
 </div>
 
 ---
 
-<!-- TODO: Hero GIF — OWU inference demo with Qwen 3.5 + SearXNG tool calling -->
+<!-- TODO: Hero GIF — OWU inference with Qwen 3.5 + SearXNG tool calling (SB recording session) -->
 
 ---
 
-## What is STMNA Desk?
+Getting inference running on AMD Strix Halo is well documented at this point. Getting inference running is step one. What comes after, connecting the LLM to a web scraper, a knowledge base, a voice pipeline, a workflow engine, and making the whole thing actually useful, is where documentation gets thin. This repo is what we built to fill that gap.
 
-STMNA Desk is a **complete self-hosted AI workstation stack** built on the AMD Ryzen AI Max+ 395 (Strix Halo) inside a Framework Desktop. It runs 70B+ parameter models locally with no cloud dependency, no subscriptions, and no data leaving your network.
+STMNA Desk is a full self-hosted AI stack running on a Framework Desktop 128GB (AMD Ryzen AI Max+ 395). Ten services, rootless containers, Ubuntu 24.04 LTS. The inference layer (llama-swap + llama.cpp, Vulkan) serves as a shared backend for everything on the machine: Open WebUI for interactive chat with web search, n8n for workflow automation, whisper.cpp for speech-to-text, Qdrant for vector search. Everything talks to everything. Nothing leaves the network.
 
-**Think of it as the application layer that nobody else is building.**
-Tools like [kyuz0's containers](https://github.com/kyuz0) show you how to run models. STMNA Desk shows you what to build with them.
+The stack runs in production. Qwen3.5 35B at 29 t/s, Qwen3-30B at 66 t/s. The Signal pipeline has processed hundreds of content items end-to-end in under 5 minutes. Voice transcription works on Linux and Android from the same backend. Strix Halo has quirks (the gated delta net attention mechanism runs slower than expected in llama.cpp's Vulkan backend, the upstream PR tracking a fix is linked in the inference docs). Every decision in this repo has a reason, and the reasons are in `/docs/` alongside the alternatives that were considered and rejected.
 
-### Hardware
-
-| Component | Specification |
-|-----------|---------------|
-| **CPU/NPU** | AMD Ryzen AI Max+ 395 (Strix Halo) |
-| **Unified Memory** | 128GB (96GB allocatable to GPU under Linux) |
-| **Storage** | 2TB NVMe SSD |
-| **Form Factor** | Framework Desktop DIY Edition |
-| **OS** | Ubuntu 24.04 LTS |
-
-### Why AMD? Why Framework?
-
-- **AMD Vulkan** — llama.cpp and whisper.cpp run natively. No CUDA required.
-- **128GB unified memory** — Run 70B models at full context without multi-GPU complexity.
-- **Framework = repairable** — No vendor lock-in. No planned obsolescence.
-- **Ubuntu-first** — Production LTS, not Fedora. Underserved gap in Strix Halo documentation.
-
----
-
-## Service Stack
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| llama-swap | 8081 | Model hot-swap proxy (OpenAI-compatible API) |
-| whisper.cpp | 8083 | Local speech-to-text (Vulkan) |
-| Open WebUI | 3000 | Chat interface + SearXNG tool calling |
-| n8n | 5678 | Workflow automation (STMNA Signal + Voice) |
-| PostgreSQL | 5432 | Pipeline data, training pairs |
-| Qdrant | 6333 | Vector database for RAG |
-| SearXNG | 8888 | Privacy-focused meta-search |
-| Crawl4AI | 11235 | Web scraping |
-| Dockge | 5001 | Container management UI |
-
-All containers run **rootless under a non-privileged user**. No root Podman. No `sudo` required for day-to-day operations.
-
----
-
-## Models Validated
-
-Benchmarked on AMD Ryzen AI Max+ 395 · Radeon 8060S (gfx1151) · Vulkan
-
-| Model | Quantization | Speed | Notes |
-|-------|--------------|-------|-------|
-| Qwen3.5-35B-A3B | UD-Q6_K_XL | ~29 t/s | Daily driver, tool calling |
-| Qwen3.5-122B-A10B | UD-Q4_K_XL | ~24 t/s | High-quality reasoning |
-| Qwen3-30B-A3B | Q4_K_M | ~66 t/s | Batch pipeline work |
-| GLM-4.7-Flash | Q6_K | ~58 t/s | Fast agentic tasks |
-| whisper large-v3-turbo | Q5 | ~3-4GB VRAM | Voice transcription |
+Clone, configure `.env`, and follow the architecture guide. The `examples/` directory has individual service compose files to start from. The docs go deep on hardware setup, inference tuning, container topology, remote access via Headscale, and an optional full-stack build with Nextcloud and Forgejo.
 
 ---
 
 ## Architecture
+
+<!-- TODO: Proper architecture diagram with brand colors (SB-10 design assets session) -->
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -88,95 +42,119 @@ Benchmarked on AMD Ryzen AI Max+ 395 · Radeon 8060S (gfx1151) · Vulkan
 │                                                                 │
 │  ┌──────────────┐   ┌───────────────────────────────────────┐  │
 │  │  llama-swap  │──▶│  llama.cpp (Vulkan)                   │  │
-│  │  :8081       │   │  Loads models on demand               │  │
+│  │  :8081       │   │  loads models on demand               │  │
 │  └──────────────┘   └───────────────────────────────────────┘  │
 │         │                                                       │
 │  ┌──────┴──────┬────────────┬────────────┐                     │
 │  ▼             ▼            ▼            ▼                     │
 │ Open WebUI    n8n       whisper.cpp   Crawl4AI                 │
-│ (Chat+Search) (Signal)  (Voice STT)  (Web scrape)             │
+│ (Chat+Search) (Pipelines)  (Voice STT) (Web scrape)           │
 │                                                                 │
 │  ┌──────────────┐   ┌────────────┐   ┌────────────────────┐   │
 │  │  SearXNG     │   │  Qdrant    │   │  PostgreSQL        │   │
 │  │  :8888       │   │  :6333     │   │  :5432             │   │
 │  └──────────────┘   └────────────┘   └────────────────────┘   │
 │                                                                 │
-│  All containers: rootless Podman · stmna-net bridge            │
+│  All containers: rootless Podman, stmna-net bridge             │
 └─────────────────────────────────────────────────────────────────┘
          │  Tailscale / Headscale VPN
-         │
-    ┌────┴────┐
-    │  Caddy  │  ← VPS, HTTPS termination, bearer token auth
-    └─────────┘
+         ▼
+    Caddy (VPS) — HTTPS termination, bearer token auth
          │
     Remote clients (laptop, mobile, team)
 ```
 
----
+| Service | Port | Purpose |
+|---------|------|---------|
+| llama-swap | 8081 | Model hot-swap proxy, OpenAI-compatible API |
+| whisper.cpp | 8083/8084 | Speech-to-text, Vulkan, separate Voice and Signal instances |
+| Open WebUI | 3000 | Chat interface with SearXNG tool calling |
+| n8n | 5678 | Workflow automation |
+| PostgreSQL | 5432 | Pipeline queue, training pairs, metrics |
+| Qdrant | 6333 | Vector database |
+| SearXNG | 8888 | Self-hosted meta-search |
+| Crawl4AI | 11235 | Web scraping |
+| Dockge | 5001 | Container management UI |
 
-## Quick Start
-
-> Full setup guide: [docs/architecture.md](docs/architecture.md)
-
-### Prerequisites
-
-- Framework Desktop 128GB (or equivalent AMD Strix Halo system)
-- Ubuntu 24.04 LTS installed
-- Podman installed (rootless, no root daemon needed)
-
-### 1. Clone
-
-```bash
-git clone https://github.com/stmna-io/stmna-desk.git
-cd stmna-desk
-```
-
-### 2. Configure
-
-```bash
-cp .env.example .env
-# Edit .env with your paths, ports, and model locations
-```
-
-### 3. Deploy Core Stack
-
-```bash
-# See docs/architecture.md for full deployment sequence
-# Examples in examples/ for individual service compose files
-```
+All containers run rootless under a non-privileged user. No root Podman daemon. Day-to-day operations require no `sudo`.
 
 ---
 
-## Documentation
+## Hardware
 
-| Document | Description |
-|----------|-------------|
-| [Hardware Guide](docs/hardware-guide.md) | Framework Desktop specs, AMD considerations, RAM requirements |
-| [Inference Stack](docs/inference-stack.md) | llama-swap, llama.cpp, Qwen 3.5 family, think/nothink modes |
-| [Architecture](docs/architecture.md) | Rootless Podman topology, networking, container architecture |
-| [Remote Access](docs/remote-access.md) | Headscale VPN, Caddy bearer token auth |
-| [Full Stack Deployment](docs/full-stack-deployment.md) | Optional: Nextcloud + Forgejo on the same machine |
+Framework Desktop DIY Edition, AMD Ryzen AI Max+ 395 (Strix Halo), 128GB unified memory, 2TB NVMe, Ubuntu 24.04 LTS.
+
+The 128GB unified pool is what makes this class of hardware interesting for AI workloads: 70B models load in full, multiple models stay warm simultaneously, Qdrant has room to grow without fighting inference for memory, and the Vulkan GPU runs llama.cpp and whisper.cpp natively without any CUDA dependency. Ubuntu 24.04 LTS was a deliberate choice: most Strix Halo documentation targets Fedora, and the gap for Ubuntu on production LTS is real.
+
+Full hardware notes and Ubuntu install specifics: [docs/hardware-guide.md](docs/hardware-guide.md)
 
 ---
 
-## Products Built on STMNA Desk
+## Performance
 
-| Product | Description | Repo |
-|---------|-------------|------|
-| **STMNA Signal** | Content intelligence pipeline (YouTube → vault) | [stmna-signal](https://github.com/stmna-io/stmna-signal) |
-| **STMNA Voice** | Sovereign speech-to-text pipeline | [stmna-voice](https://github.com/stmna-io/stmna-voice) |
+Benchmarked on Radeon 8060S (gfx1151), Vulkan, llama.cpp build b8182.
+
+Qwen3-30B runs at 66 t/s on this hardware and is the right model for batch pipeline work. Qwen3.5-35B runs at 29 t/s. The gap is architectural: Qwen3.5's gated delta net linear attention mechanism does not yet have a optimized Vulkan kernel in llama.cpp, so those operations fall back to CPU. The fix is in progress upstream. The quality and tool-calling capabilities of Qwen3.5 justify the speed trade-off for interactive and agentic use. Both situations are documented in [docs/inference-stack.md](docs/inference-stack.md), including which upstream PR to watch.
+
+| Model | Quant | Speed | Best for |
+|-------|-------|-------|----------|
+| Qwen3.5-35B-A3B | UD-Q6_K_XL | 29 t/s | Daily driver, tool calling, agentic tasks |
+| Qwen3.5-122B-A10B | UD-Q4_K_XL | 24 t/s | High-quality reasoning |
+| Qwen3-30B-A3B | Q4_K_M | 66 t/s | Batch pipelines, summarization |
+| GLM-4.7-Flash | Q6_K | 58 t/s | Fast agentic tasks |
+| whisper large-v3-turbo | Q5 | 3-4GB VRAM | Speech-to-text |
+
+---
+
+## Guides
+
+| Guide | What's in it |
+|-------|-------------|
+| [Hardware Guide](docs/hardware-guide.md) | Framework Desktop setup, Ubuntu 24.04 install, driver notes for Strix Halo |
+| [Inference Stack](docs/inference-stack.md) | llama-swap config reference, model groups, think/nothink modes, benchmark data |
+| [Architecture](docs/architecture.md) | Container topology, rootless Podman, stmna-net networking, startup sequence |
+| [Remote Access](docs/remote-access.md) | Headscale VPN, Caddy bearer token configuration |
+| [Full Stack Deployment](docs/full-stack-deployment.md) | Optional: add Nextcloud and Forgejo to the same machine |
+
+The `examples/` directory has individual service compose files.
+
+---
+
+## Ecosystem
+
+Two production pipelines run on STMNA Desk and are available as separate repos:
+
+**[STMNA Signal](https://github.com/stmna-io/stmna-signal)** — send a YouTube URL or web link via Signal messenger and get a structured intelligence note in your Obsidian vault. Whisper transcription, Qwen summarization, PostgreSQL deduplication cache. End-to-end in under 5 minutes for a 2-hour video.
+
+**[STMNA Voice](https://github.com/stmna-io/stmna-voice)** — push-to-talk speech-to-text on Linux and Android from a shared Desk backend. Whisper large-v3-turbo, Qwen3 accent correction, training pair collection for fine-tuning.
+
+---
+
+## Acknowledgments
+
+STMNA Desk runs because of the work these projects put in:
+
+- [llama.cpp](https://github.com/ggerganov/llama.cpp) by Georgi Gerganov — the inference engine underneath everything
+- [whisper.cpp](https://github.com/ggerganov/whisper.cpp) by Georgi Gerganov — local STT that actually works on AMD
+- [llama-swap](https://github.com/mostlygeek/llama-swap) by mostlygeek — model hot-swapping without the complexity
+- [n8n](https://n8n.io) — workflow automation that makes complex pipelines visual and modifiable
+- [Podman](https://podman.io) — rootless containers that made the security model here possible
+- [Open WebUI](https://github.com/open-webui/open-webui) — the chat interface
+- [SearXNG](https://github.com/searxng/searxng) — self-hosted meta-search
+- [Crawl4AI](https://github.com/unclecode/crawl4ai) — web scraping
+- [Qdrant](https://qdrant.tech) — vector storage
+- [Framework](https://frame.work) — hardware worth documenting because it's worth keeping
+- The Strix Halo community, especially [kyuz0](https://github.com/kyuz0) for early inference container work on this architecture
 
 ---
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+Benchmark data on non-Framework AMD Strix Halo hardware is the most useful contribution right now. If you run this on a different board or APU, open an issue with your speeds and configuration.
 
-Areas appreciated:
-- 📊 Benchmark data on different AMD hardware configurations
-- 📝 Documentation improvements
-- 🔧 Additional compose snippets for services
-- 🐛 Bug reports and fixes
+Other welcome contributions: documentation corrections, additional service compose files in `examples/`, and bug reports with hardware and OS details.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
