@@ -12,7 +12,7 @@
 
   <br/>
 
-  [Architecture](#architecture) · [Performance](#performance) · [Guides](#guides) · [Ecosystem](#ecosystem)
+  [📖 Architecture](#architecture) · [⚡ Performance](#performance) · [🚀 Quick Start](#quick-start) · [📚 Guides](#guides) · [🔗 Ecosystem](#ecosystem)
 
 </div>
 
@@ -22,13 +22,11 @@
 
 ---
 
-Getting inference running on AMD Strix Halo is well documented at this point. Getting inference running is step one. What comes after, connecting the LLM to a web scraper, a knowledge base, a voice pipeline, a workflow engine, and making the whole thing actually useful, is where documentation gets thin. This repo is what we built to fill that gap.
+## What is STMNA Desk?
 
-STMNA Desk is a full self-hosted AI stack running on a Framework Desktop 128GB (AMD Ryzen AI Max+ 395). Ten services, rootless containers, Ubuntu 24.04 LTS. The inference layer (llama-swap + llama.cpp, Vulkan) serves as a shared backend for everything on the machine: Open WebUI for interactive chat with web search, n8n for workflow automation, whisper.cpp for speech-to-text, Qdrant for vector search. Everything talks to everything. Nothing leaves the network.
+STMNA Desk is a full self-hosted AI stack running on a Framework Desktop 128GB (AMD Ryzen AI Max+ 395). Ten services, rootless containers, Ubuntu 24.04 LTS. The inference layer (llama-swap + llama.cpp, Vulkan) serves as a shared backend for everything on the machine: Open WebUI for interactive chat with web search, n8n for workflow automation, whisper.cpp for speech-to-text. Everything talks to everything. Nothing leaves the network.
 
-The stack runs in production. Qwen3.5 35B at 29 t/s, Qwen3-30B at 66 t/s. The Signal pipeline has processed hundreds of content items end-to-end in under 5 minutes. Voice transcription works on Linux and Android from the same backend. Strix Halo has quirks (the gated delta net attention mechanism runs slower than expected in llama.cpp's Vulkan backend, the upstream PR tracking a fix is linked in the inference docs). Every decision in this repo has a reason, and the reasons are in `/docs/` alongside the alternatives that were considered and rejected.
-
-Clone, configure `.env`, and follow the architecture guide. The `examples/` directory has individual service compose files to start from. The docs go deep on hardware setup, inference tuning, container topology, remote access via Headscale, and an optional full-stack build with Nextcloud and Forgejo.
+Getting inference running on Strix Halo is well documented. What comes after, connecting the LLM to a web scraper, a knowledge base, a voice pipeline, a workflow engine, is where documentation gets thin. This repo is what we built to fill that gap. Every decision has a reason, and the reasons are in `/docs/`.
 
 ---
 
@@ -82,9 +80,15 @@ All containers run rootless under a non-privileged user. No root Podman daemon. 
 
 ## Hardware
 
-Framework Desktop DIY Edition, AMD Ryzen AI Max+ 395 (Strix Halo), 128GB unified memory, 2TB NVMe, Ubuntu 24.04 LTS.
+| Component | Specification |
+|-----------|---------------|
+| **CPU/APU** | AMD Ryzen AI Max+ 395 (Strix Halo) |
+| **Unified Memory** | 128GB (96GB allocatable to GPU under Linux) |
+| **Storage** | 2TB NVMe SSD |
+| **Form Factor** | Framework Desktop DIY Edition |
+| **OS** | Ubuntu 24.04 LTS |
 
-The 128GB unified pool is what makes this class of hardware interesting for AI workloads: 70B models load in full, multiple models stay warm simultaneously, Qdrant has room to grow without fighting inference for memory, and the Vulkan GPU runs llama.cpp and whisper.cpp natively without any CUDA dependency. Ubuntu 24.04 LTS was a deliberate choice: most Strix Halo documentation targets Fedora, and the gap for Ubuntu on production LTS is real.
+The 128GB unified pool is what makes this class of hardware interesting for AI workloads: 70B models load in full, multiple models stay warm simultaneously, and the Vulkan GPU runs llama.cpp and whisper.cpp natively without any CUDA dependency. Ubuntu 24.04 LTS was a deliberate choice; most Strix Halo documentation targets Fedora, and the gap for Ubuntu on production LTS is real.
 
 Full hardware notes and Ubuntu install specifics: [docs/hardware-guide.md](docs/hardware-guide.md)
 
@@ -94,8 +98,6 @@ Full hardware notes and Ubuntu install specifics: [docs/hardware-guide.md](docs/
 
 Benchmarked on Radeon 8060S (gfx1151), Vulkan, llama.cpp build b8182.
 
-Qwen3-30B runs at 66 t/s on this hardware and is the right model for batch pipeline work. Qwen3.5-35B runs at 29 t/s. The gap is architectural: Qwen3.5's gated delta net linear attention mechanism does not yet have a optimized Vulkan kernel in llama.cpp, so those operations fall back to CPU. The fix is in progress upstream. The quality and tool-calling capabilities of Qwen3.5 justify the speed trade-off for interactive and agentic use. Both situations are documented in [docs/inference-stack.md](docs/inference-stack.md), including which upstream PR to watch.
-
 | Model | Quant | Speed | Best for |
 |-------|-------|-------|----------|
 | Qwen3.5-35B-A3B | UD-Q6_K_XL | 29 t/s | Daily driver, tool calling, agentic tasks |
@@ -104,9 +106,28 @@ Qwen3-30B runs at 66 t/s on this hardware and is the right model for batch pipel
 | GLM-4.7-Flash | Q6_K | 58 t/s | Fast agentic tasks |
 | whisper large-v3-turbo | Q5 | 3-4GB VRAM | Speech-to-text |
 
+Qwen3-30B at 66 t/s is the right model for batch pipeline work. Qwen3.5-35B at 29 t/s is slower because its gated delta net linear attention mechanism doesn't yet have an optimized Vulkan kernel in llama.cpp, so those operations fall back to CPU. The upstream fix is in progress. The quality and tool-calling capabilities of Qwen3.5 justify the speed trade-off for interactive and agentic use. Both situations are documented in [docs/inference-stack.md](docs/inference-stack.md), including which upstream PR to watch.
+
 ---
 
-## Guides
+## Quick Start
+
+> Full deployment walkthrough: [docs/architecture.md](docs/architecture.md)
+
+**Prerequisites:** Framework Desktop 128GB (or equivalent AMD Strix Halo system), Ubuntu 24.04 LTS, Podman installed (rootless).
+
+```bash
+git clone https://github.com/stmna-io/stmna-desk.git
+cd stmna-desk
+cp .env.example .env
+# Edit .env with your paths, ports, and model locations
+```
+
+The `examples/` directory has individual service compose files to start from. The docs go deep on hardware setup, inference tuning, container topology, remote access via Headscale, and an optional full-stack build with Nextcloud and Forgejo.
+
+---
+
+## 📚 Guides
 
 | Guide | What's in it |
 |-------|-------------|
@@ -116,17 +137,14 @@ Qwen3-30B runs at 66 t/s on this hardware and is the right model for batch pipel
 | [Remote Access](docs/remote-access.md) | Headscale VPN, Caddy bearer token configuration |
 | [Full Stack Deployment](docs/full-stack-deployment.md) | Optional: add Nextcloud and Forgejo to the same machine |
 
-The `examples/` directory has individual service compose files.
-
 ---
 
-## Ecosystem
+## 🔗 Ecosystem
 
-Two production pipelines run on STMNA Desk and are available as separate repos:
-
-**[STMNA Signal](https://github.com/stmna-io/stmna-signal)** — send a YouTube URL or web link via Signal messenger and get a structured intelligence note in your Obsidian vault. Whisper transcription, Qwen summarization, PostgreSQL deduplication cache. End-to-end in under 5 minutes for a 2-hour video.
-
-**[STMNA Voice](https://github.com/stmna-io/stmna-voice)** — push-to-talk speech-to-text on Linux and Android from a shared Desk backend. Whisper large-v3-turbo, Qwen3 accent correction, training pair collection for fine-tuning.
+| Product | Description | Repo |
+|---------|-------------|------|
+| **STMNA Signal** | Send a YouTube URL or web link via Signal messenger, get a structured intelligence note in your Obsidian vault. Whisper transcription, Qwen summarization, PostgreSQL dedup cache. End-to-end in under 5 minutes for a 2-hour video. | [stmna-signal](https://github.com/stmna-io/stmna-signal) |
+| **STMNA Voice** | Push-to-talk speech-to-text on Linux and Android from a shared Desk backend. Whisper large-v3-turbo, Qwen3 accent correction, training pair collection for fine-tuning. | [stmna-voice](https://github.com/stmna-io/stmna-voice) |
 
 ---
 
