@@ -983,6 +983,15 @@ curl -s http://localhost:11235/health
 
 SearXNG is a privacy-respecting metasearch engine. The Signal Worker uses it for web search queries. Optional but recommended.
 
+Create the data directory and fix permissions for rootless Podman:
+
+```bash
+mkdir -p ~/data/searxng
+podman unshare chown 0:0 ~/data/searxng
+```
+
+> **Required for rootless Podman:** The SearXNG entrypoint runs as root inside the container to create initial settings files. In rootless Podman, container root maps to an unprivileged subUID on the host. Without this ownership fix, the entrypoint fails with `Permission denied` when writing `settings.yml`.
+
 In Dockge, create a new stack named `searxng`:
 
 ```yaml
@@ -1122,7 +1131,7 @@ curl -s http://localhost:5678/healthz
 ### Kokoro TTS voice list
 
 ```bash
-curl -s http://localhost:9005/v1/audio/voices | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Available voices: {len(d)}')"
+curl -s http://localhost:9005/v1/audio/voices | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Available voices: {len(d[\"voices\"])}')"
 ```
 
 **Expected result:** `Available voices: N` (where N > 0)
