@@ -1,0 +1,42 @@
+# ============================================================
+# STMNA Desk -- llama-swap (LLM Reverse Proxy)
+# Part of: stmna-desk install guide, Section 6
+# Requires: stmna-net network, GPU (Vulkan) for inference
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  llama-swap:
+    # INFO: Routes LLM requests to the right model, manages VRAM, hot-swaps on demand
+    image: ghcr.io/mostlygeek/llama-swap:vulkan
+    container_name: llama-swap
+    restart: always
+    ports:
+      # OPTIONAL -- main proxy port (other services connect here)
+      - "8081:8080"
+      # OPTIONAL -- additional ports for direct model access
+      - "9001:9001"
+      - "9002:9002"
+    volumes:
+      # USER INPUT REQUIRED -- path to your downloaded GGUF models
+      - /home/stmna/models:/models
+      # NO ACTION NEEDED -- llama-swap configuration file
+      - ./config.yaml:/app/config.yaml
+    # NOTE -- GPU passthrough (requires Vulkan drivers on host)
+    # Remove devices/group_add/security_opt if running without GPU
+    #devices:
+    #  - /dev/dri:/dev/dri
+    #group_add:
+    #  - video
+    #security_opt:
+    #  - seccomp=unconfined
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

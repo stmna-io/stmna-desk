@@ -1,0 +1,34 @@
+# ============================================================
+# STMNA Desk -- Dockge (Container Management UI)
+# Part of: stmna-desk install guide, Section 3
+# Requires: rootless Podman, podman-compose
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  dockge:
+    # INFO: Web UI for managing Podman compose stacks
+    image: docker.io/louislam/dockge:1
+    container_name: dockge
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 5001 conflicts
+      - "5001:5001"
+    volumes:
+      # NO ACTION NEEDED -- rootless Podman socket (UID 1000)
+      # NOTE -- adjust /run/user/XXXX to match your UID (run: id -u)
+      - /run/user/1000/podman/podman.sock:/var/run/docker.sock
+      # NO ACTION NEEDED -- persists Dockge settings
+      - dockge_data:/app/data
+      # USER INPUT REQUIRED -- path where your stacks live
+      - /home/stmna/stacks:/home/stmna/stacks
+    environment:
+      # USER INPUT REQUIRED -- must match the stacks volume path above
+      - DOCKGE_STACKS_DIR=/home/stmna/stacks
+
+volumes:
+  dockge_data:
+    driver: local
+    name: dockge_data

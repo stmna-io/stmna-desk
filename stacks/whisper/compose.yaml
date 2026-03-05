@@ -1,0 +1,86 @@
+# ============================================================
+# STMNA Desk -- Whisper Server (Speech-to-Text)
+# Part of: stmna-desk install guide, Section 7
+# Requires: stmna-net network, GPU (Vulkan) for transcription
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  whisper-voice:
+    # INFO: Dedicated whisper instance for STMNA_Voice (short clips, low latency)
+    image: ghcr.io/ggml-org/whisper.cpp:main-vulkan
+    container_name: whisper-voice
+    restart: always
+    read_only: true
+    init: true
+    ports:
+      # OPTIONAL -- change if 8083 conflicts
+      - "8083:8083"
+    # NOTE -- GPU passthrough (remove if no GPU)
+    #devices:
+    #  - /dev/dri:/dev/dri
+    tmpfs:
+      - /root/.cache/mesa_shader_cache
+      - /app
+    volumes:
+      # USER INPUT REQUIRED -- path to whisper model files
+      - /home/stmna/models:/models:ro
+    command:
+      - whisper-server
+      - "-m"
+      - "/models/ggml-large-v3-turbo-q5_0.bin"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8083"
+      - "--inference-path"
+      - "/v1/audio/transcriptions"
+      - "--convert"
+      - "-t"
+      - "4"
+      - "-fa"
+    networks:
+      - default
+      - stmna-net
+
+  whisper-signal:
+    # INFO: Dedicated whisper instance for STMNA_Signal (long YouTube/podcast transcription)
+    image: ghcr.io/ggml-org/whisper.cpp:main-vulkan
+    container_name: whisper-signal
+    restart: always
+    read_only: true
+    init: true
+    ports:
+      # OPTIONAL -- change if 8084 conflicts
+      - "8084:8084"
+    #devices:
+    #  - /dev/dri:/dev/dri
+    tmpfs:
+      - /root/.cache/mesa_shader_cache
+      - /app
+    volumes:
+      - /home/stmna/models:/models:ro
+    command:
+      - whisper-server
+      - "-m"
+      - "/models/ggml-large-v3-turbo-q5_0.bin"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8084"
+      - "--inference-path"
+      - "/v1/audio/transcriptions"
+      - "--convert"
+      - "-t"
+      - "4"
+      - "-fa"
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

@@ -1,0 +1,53 @@
+# ============================================================
+# STMNA Desk -- Agent Zero (AI Agent)
+# Part of: stmna-desk install guide, Section 11
+# Requires: stmna-net network, llama-swap running, TEI running
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  agent-zero:
+    # INFO: Autonomous AI agent with memory, tools, and code execution
+    image: docker.io/agent0ai/agent-zero:latest
+    container_name: agent-zero
+    restart: unless-stopped
+    ports:
+      # OPTIONAL -- change host port if 50001 conflicts
+      - "50001:80"
+    volumes:
+      # NO ACTION NEEDED -- persistent user data
+      - ./usr:/a0/usr
+      - ./agents:/a0/agents
+      - ./work_dir:/a0/work_dir
+      - ./knowledge:/a0/knowledge
+      - ./logs:/a0/logs
+    environment:
+      # USER INPUT REQUIRED -- chat model (must match a model in your llama-swap config)
+      - A0_SET_chat_model_provider=openai
+      - A0_SET_chat_model_name=qwen3.5-35b-nothink
+      - A0_SET_chat_model_api_base=http://llama-swap:8080/v1
+      - A0_SET_chat_model_ctx_length=65536
+      # USER INPUT REQUIRED -- utility model
+      - A0_SET_util_model_provider=openai
+      - A0_SET_util_model_name=qwen3.5-35b-nothink
+      - A0_SET_util_model_api_base=http://llama-swap:8080/v1
+      - A0_SET_util_model_ctx_length=65536
+      # USER INPUT REQUIRED -- embedding model (TEI container)
+      - A0_SET_embed_model_provider=openai
+      - A0_SET_embed_model_name=openai/pplx-embed-context-v1-0.6b
+      - A0_SET_embed_model_api_base=http://text-embeddings:80/v1
+      # USER INPUT REQUIRED -- browser/vision model
+      - A0_SET_browser_model_provider=openai
+      - A0_SET_browser_model_name=qwen3.5-35b-nothink
+      - A0_SET_browser_model_api_base=http://llama-swap:8080/v1
+      - A0_SET_browser_model_ctx_length=65536
+      # NO ACTION NEEDED -- llama-swap does not require a real key
+      - API_KEY_OPENAI=sk-not-needed
+    networks:
+      - stmna-net
+
+networks:
+  stmna-net:
+    external: true

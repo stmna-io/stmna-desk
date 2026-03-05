@@ -1,0 +1,38 @@
+# ============================================================
+# STMNA Desk -- Text Embeddings Inference (TEI)
+# Part of: stmna-desk install guide, Section 9
+# Requires: stmna-net network
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  text-embeddings:
+    # INFO: Serves embedding vectors for vault RAG search (used by n8n, Open WebUI, Agent Zero)
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9
+    container_name: text-embeddings
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 9003 conflicts
+      - "9003:80"
+    volumes:
+      # NO ACTION NEEDED -- model cache directory
+      - /home/stmna/data/tei:/data
+    environment:
+      # OPTIONAL -- embedding model (1024 dims, ~43ms/query on CPU)
+      - MODEL_ID=perplexity-ai/pplx-embed-context-v1-0.6b
+      # NOTE -- float32 requires ~3GB RAM. Use float16 on machines with less than 16GB RAM.
+      - DTYPE=float32
+      # OPTIONAL -- reduce on low-RAM machines (default: 16384, minimum: 256)
+      # NOTE -- float32 with 16384 tokens needs ~16GB RAM for attention buffers.
+      # On machines with 8GB or less, set to 512 or 1024.
+      - MAX_BATCH_TOKENS=512
+      # OPTIONAL -- increase for batch workloads (default: 32)
+      - MAX_CLIENT_BATCH_SIZE=128
+    networks:
+      - stmna-net
+
+networks:
+  stmna-net:
+    external: true

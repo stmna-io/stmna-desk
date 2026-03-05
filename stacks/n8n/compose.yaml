@@ -1,0 +1,51 @@
+# ============================================================
+# STMNA Desk -- n8n Workflow Automation
+# Part of: stmna-desk install guide, Section 7
+# Requires: stmna-net network, PostgreSQL running, custom n8n image built
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  n8n:
+    # INFO: Custom image with ffmpeg, yt-dlp, pandoc, python3 for Signal workflows
+    # Build first: cd ~/docker/n8n && podman build -t stmna-n8n:latest .
+    image: localhost/stmna-n8n:latest
+    container_name: n8n
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 5678 conflicts
+      - "5678:5678"
+    environment:
+      # NO ACTION NEEDED -- n8n server config
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      # USER INPUT REQUIRED -- your public URL or local IP for webhooks
+      - WEBHOOK_URL=http://YOUR_IP:5678/
+      # NO ACTION NEEDED -- enables JS task runner for Code nodes
+      - N8N_RUNNERS_ENABLED=true
+      # NO ACTION NEEDED -- allows Code nodes to use filesystem and subprocess
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path
+      # OPTIONAL -- your timezone (default: UTC)
+      - GENERIC_TIMEZONE=Europe/Amsterdam
+      # NO ACTION NEEDED -- required for some workflow operations
+      - N8N_EXECUTE_COMMAND_ENABLED=true
+      # NO ACTION NEEDED -- extended timeouts for long-running tasks (book translation)
+      - N8N_RUNNERS_HEARTBEAT_INTERVAL=1800
+      - N8N_RUNNERS_TASK_TIMEOUT=43200
+      - EXECUTIONS_TIMEOUT=-1
+      # NO ACTION NEEDED -- disable secure cookie for HTTP-only access (set to true if using HTTPS)
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      # NO ACTION NEEDED -- persistent n8n data (workflows, credentials, settings)
+      - /home/stmna/data/n8n:/home/node/.n8n
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true
