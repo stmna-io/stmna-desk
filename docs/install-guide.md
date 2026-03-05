@@ -1194,6 +1194,37 @@ Or open a new terminal session.
 
 ---
 
+## Optional: Vault RAG Search
+
+If you have TEI (Step 9), n8n (Step 7), and a vault repository on Forgejo (Step 11), you can enable semantic search across your vault notes. This requires:
+
+1. The Vault Embedding Pipeline workflow in n8n (imports from `vault-embedding-pipeline.json`)
+2. The Vault Ops workflow with search action (imports from `vault-ops.json`)
+3. A Forgejo webhook that triggers re-embedding on push (see Step 11)
+
+### Open WebUI vault search tool
+
+To enable vault search in Open WebUI:
+
+1. In Open WebUI, go to Workspace > Tools > Create
+2. Paste the `vault_search` tool code (available in the stmna-desk repo at `tools/owu-vault-search-tool.py`)
+3. Go to Admin Panel > Models, click the gear icon on your model
+4. Under Advanced Params, set `function_calling` to `native`
+
+> **Critical:** Open WebUI defaults to prompt-based tool calling, which silently fails with local LLMs. You must set `function_calling` to `native` for each model that should use vault search.
+
+### Agent Zero vault search tool
+
+To enable vault search in Agent Zero:
+
+1. Copy `tools/a0-vault-search-tool.py` to your Agent Zero `usr/tools/vault_search.py`
+2. Copy `tools/a0-vault-search-prompt.md` to your Agent Zero `usr/prompts/agent.system.tool.vault_search.md`
+3. Restart Agent Zero
+
+Both tools call the Vault Ops webhook at `http://n8n:5678/webhook/vault` with `{"action": "search", "query": "..."}`. No additional credentials are needed -- they communicate over the container network.
+
+---
+
 ## What's Next
 
 - [Signal install guide](https://f.slowdawn.cc/stmna-io/stmna-signal/src/branch/main/docs/install-guide.md) -- add the Signal content pipeline
