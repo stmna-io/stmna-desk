@@ -1,0 +1,41 @@
+# ============================================================
+# STMNA Desk -- Forgejo (Self-Hosted Git)
+# Part of: stmna-desk install guide, Step 11 (Extended)
+# Requires: stmna-net network
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  forgejo:
+    # INFO: Self-hosted git forge for vault repos, workflow exports, source code
+    image: codeberg.org/forgejo/forgejo:10
+    container_name: forgejo
+    restart: always
+    ports:
+      # OPTIONAL -- HTTP web UI (avoid conflict with Open WebUI on 3000)
+      - "3300:3000"
+      # OPTIONAL -- SSH for git over SSH (remove if not needed)
+      - "2222:22"
+    volumes:
+      # NO ACTION NEEDED -- persistent data (repos, config, database)
+      - /home/stmna/data/forgejo:/data
+    environment:
+      # NO ACTION NEEDED -- Forgejo runs as UID 1000 inside the container
+      - USER_UID=1000
+      - USER_GID=1000
+      # USER INPUT REQUIRED -- your server's domain or IP for clone URLs
+      - FORGEJO__server__ROOT_URL=http://YOUR_IP:3300/
+      # NO ACTION NEEDED -- use built-in SQLite (sufficient for single-user/small-team)
+      - FORGEJO__database__DB_TYPE=sqlite3
+      # OPTIONAL -- disable registration after creating your admin account
+      # - FORGEJO__service__DISABLE_REGISTRATION=true
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

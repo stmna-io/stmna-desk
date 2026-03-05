@@ -25,6 +25,22 @@ updated: 2026-03-05
 
 > **Note:** The GPU requirement applies to llama-swap (LLM inference) and Whisper (transcription). Services like n8n, PostgreSQL, TEI, Kokoro TTS, Open WebUI, and Dockge run on CPU and work on any hardware.
 
+## Installation Tiers
+
+The STMNA Desk stack is organized into three tiers. Install what you need.
+
+| Tier | Steps | Services | When you need it |
+|------|-------|----------|-----------------|
+| **Core** | 1-6 | System Setup, Network, Dockge, PostgreSQL+PGVector, llama-swap, Open WebUI | Chat + local LLM inference. Every user installs this. |
+| **Automation** | 7-8 | n8n (custom image), Whisper (2 instances) | Adding Signal or Voice products. |
+| **Extended** | 9-12 | TEI, Kokoro TTS, Forgejo, Agent Zero | Vault RAG, audio summaries, git hosting, AI agent. Install what you need. |
+
+---
+
+# Core Tier (Steps 1-6)
+
+> Chat + local LLM inference. Every user installs this.
+
 ---
 
 ## Step 1: System Setup
@@ -127,7 +143,7 @@ Create a new stack in Dockge named `dockge`, or create the file `~/stacks/dockge
 ```yaml
 # ============================================================
 # STMNA Desk -- Dockge (Container Management UI)
-# Part of: stmna-desk install guide, Section 3
+# Part of: stmna-desk install guide, Step 3 (Core)
 # Requires: rootless Podman, podman-compose
 # ============================================================
 
@@ -186,7 +202,7 @@ In Dockge, create a new stack named `postgres` with the following compose file:
 ```yaml
 # ============================================================
 # STMNA Desk -- PostgreSQL + PGVector
-# Part of: stmna-desk install guide, Section 4
+# Part of: stmna-desk install guide, Step 4 (Core)
 # Requires: stmna-net network
 # ============================================================
 
@@ -263,7 +279,7 @@ In Dockge, create a new stack named `llama-swap`:
 ```yaml
 # ============================================================
 # STMNA Desk -- llama-swap (LLM Reverse Proxy)
-# Part of: stmna-desk install guide, Section 5
+# Part of: stmna-desk install guide, Step 5 (Core)
 # Requires: stmna-net network, GPU (Vulkan)
 # ============================================================
 
@@ -320,7 +336,196 @@ curl -s http://localhost:8081/v1/models
 
 ---
 
-## Step 6: Whisper Server (Speech-to-Text)
+## Step 6: Open WebUI (Chat Interface)
+
+Open WebUI provides a web-based chat interface for interacting with your local LLMs via llama-swap.
+
+In Dockge, create a new stack named `open-webui`:
+
+```yaml
+# ============================================================
+# STMNA Desk -- Open WebUI
+# Part of: stmna-desk install guide, Step 6 (Core)
+# Requires: stmna-net network, llama-swap running, PostgreSQL running
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  open-webui:
+    # INFO: Chat UI for interacting with local LLMs via llama-swap
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 3000 conflicts
+      - "3000:8080"
+    volumes:
+      # NO ACTION NEEDED -- persistent settings, chat history, uploaded files
+      - /home/stmna/data/open-webui:/app/backend/data
+    environment:
+      # USER INPUT REQUIRED -- llama-swap API endpoint (use your server IP or container hostname)
+      - OPENAI_API_BASE_URL=http://llama-swap:8080/v1
+      # NO ACTION NEEDED -- llama-swap does not require a real key
+      - OPENAI_API_KEY=sk-none
+      # OPTIONAL -- set to false to disable login (single-user mode)
+      - WEBUI_AUTH=true
+      # NO ACTION NEEDED -- uses PGVector for RAG document storage
+      - VECTOR_DB=pgvector
+      # USER INPUT REQUIRED -- PostgreSQL connection string (update password to match your postgres setup)
+      - PGVECTOR_DB_URL=postgresql://voice:YOUR_POSTGRES_PASSWORD@postgres-voice:5432/stmna_signal
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true
+```
+
+> **Required:** Update the PostgreSQL password in `PGVECTOR_DB_URL` to match the password you set in Step 4.
+
+> **Note:** The `stmna_signal` database must exist before deploying Open WebUI. If you skipped the database creation step in Step 4, Open WebUI will fail to start. See Troubleshooting below.
+
+**Expected result:** Open WebUI is accessible at `http://YOUR_IP:3000`. On first visit, create an admin account.
+
+At this point, your Core tier is complete. You can chat with local LLMs through Open WebUI. If you only need chat + inference, you can stop here.
+
+---
+
+# Automation Tier (Steps 7-8)
+
+> Required for running STMNA Signal or STMNA Voice products. Adds workflow automation and speech-to-text.
+
+---
+
+## Step 7: n8n (Workflow Automation)
+
+n8n is the automation engine that runs Signal and Voice workflows. STMNA uses a custom image that adds ffmpeg, yt-dlp, pandoc, and python3 for media processing.
+
+### Build the custom n8n image
+
+```bash
+mkdir -p ~/docker/n8n
+```
+
+Copy the Dockerfile from the [stmna-desk repo](https://f.slowdawn.cc/stmna-io/stmna-desk/src/branch/main/docker/n8n/Dockerfile) into `~/docker/n8n/Dockerfile`, then build:
+
+```bash
+cd ~/docker/n8n
+podman build -t stmna-n8n:latest .
+```
+
+**Expected result:** Build completes with `Successfully tagged localhost/stmna-n8n:latest`.
+
+Verify all tools are available:
+
+```bash
+podman run --rm --entrypoint /usr/bin/ffmpeg stmna-n8n:latest -version 2>&1 | head -1
+podman run --rm --entrypoint /usr/local/bin/yt-dlp stmna-n8n:latest --version
+podman run --rm --entrypoint /usr/bin/pandoc stmna-n8n:latest --version 2>&1 | head -1
+podman run --rm --entrypoint /usr/bin/python3 stmna-n8n:latest --version
+```
+
+**Expected result:**
+
+```
+ffmpeg version 7.0.2-static ...
+2026.03.03
+pandoc 3.6.4
+Python 3.12.13
+```
+
+### Fix data directory permissions
+
+Before deploying n8n, fix the data directory ownership for rootless Podman:
+
+```bash
+mkdir -p ~/data/n8n
+podman unshare chown -R 1000:1000 ~/data/n8n
+```
+
+> **Note:** This is required because n8n runs as user `node` (UID 1000 inside the container). In rootless Podman, UIDs are remapped. Without this step, n8n will fail with `EACCES: permission denied, open '/home/node/.n8n/config'`.
+
+### Deploy n8n
+
+In Dockge, create a new stack named `n8n`:
+
+```yaml
+# ============================================================
+# STMNA Desk -- n8n Workflow Automation
+# Part of: stmna-desk install guide, Step 7 (Automation)
+# Requires: stmna-net network, PostgreSQL running, custom n8n image built
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  n8n:
+    # INFO: Custom image with ffmpeg, yt-dlp, pandoc, python3 for Signal workflows
+    # Build first: cd ~/docker/n8n && podman build -t stmna-n8n:latest .
+    image: localhost/stmna-n8n:latest
+    container_name: n8n
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 5678 conflicts
+      - "5678:5678"
+    environment:
+      # NO ACTION NEEDED -- n8n server config
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      # USER INPUT REQUIRED -- your public URL or local IP for webhooks
+      - WEBHOOK_URL=http://YOUR_IP:5678/
+      # NO ACTION NEEDED -- allows Code nodes to use filesystem and subprocess
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path
+      # OPTIONAL -- your timezone (default: UTC)
+      - GENERIC_TIMEZONE=Europe/Amsterdam
+      # NO ACTION NEEDED -- required for some workflow operations
+      - N8N_EXECUTE_COMMAND_ENABLED=true
+      # NO ACTION NEEDED -- extended timeouts for long-running tasks (book translation)
+      - N8N_RUNNERS_HEARTBEAT_INTERVAL=1800
+      - N8N_RUNNERS_TASK_TIMEOUT=43200
+      - EXECUTIONS_TIMEOUT=-1
+      # NO ACTION NEEDED -- disable secure cookie for HTTP access (set to true if using HTTPS)
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      # NO ACTION NEEDED -- persistent n8n data (workflows, credentials, settings)
+      - /home/stmna/data/n8n:/home/node/.n8n
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true
+```
+
+> **Required:** Set `WEBHOOK_URL` to your server's IP or domain. For local network access: `http://YOUR_IP:5678/`. For public access with HTTPS: `https://n8n.yourdomain.com/`.
+
+> **Note:** Set `N8N_SECURE_COOKIE=true` once you have HTTPS configured via the [network guide](network-guide.md).
+
+**Expected result:** n8n is accessible at `http://YOUR_IP:5678`. On first visit, create an admin account.
+
+Verify:
+
+```bash
+curl -s http://localhost:5678/healthz
+```
+
+**Expected result:**
+
+```json
+{"status":"ok"}
+```
+
+---
+
+## Step 8: Whisper Server (Speech-to-Text)
 
 *Documented from production reference. Not staging-validated for transcription.*
 
@@ -331,7 +536,7 @@ In Dockge, create a new stack named `whisper`:
 ```yaml
 # ============================================================
 # STMNA Desk -- Whisper Server (Speech-to-Text)
-# Part of: stmna-desk install guide, Section 6
+# Part of: stmna-desk install guide, Step 8 (Automation)
 # Requires: stmna-net network, GPU (Vulkan)
 # ============================================================
 
@@ -422,184 +627,9 @@ networks:
 
 ---
 
-## Step 7: n8n (Workflow Automation)
+# Extended Tier (Steps 9-12)
 
-n8n is the automation engine that runs Signal and Voice workflows. STMNA uses a custom image that adds ffmpeg, yt-dlp, pandoc, and python3 for media processing.
-
-### Build the custom n8n image
-
-```bash
-mkdir -p ~/docker/n8n
-```
-
-Copy the Dockerfile from the [stmna-desk repo](https://f.slowdawn.cc/stmna-io/stmna-desk/src/branch/main/docker/n8n/Dockerfile) into `~/docker/n8n/Dockerfile`, then build:
-
-```bash
-cd ~/docker/n8n
-podman build -t stmna-n8n:latest .
-```
-
-**Expected result:** Build completes with `Successfully tagged localhost/stmna-n8n:latest`.
-
-Verify all tools are available:
-
-```bash
-podman run --rm --entrypoint /usr/bin/ffmpeg stmna-n8n:latest -version 2>&1 | head -1
-podman run --rm --entrypoint /usr/local/bin/yt-dlp stmna-n8n:latest --version
-podman run --rm --entrypoint /usr/bin/pandoc stmna-n8n:latest --version 2>&1 | head -1
-podman run --rm --entrypoint /usr/bin/python3 stmna-n8n:latest --version
-```
-
-**Expected result:**
-
-```
-ffmpeg version 7.0.2-static ...
-2026.03.03
-pandoc 3.6.4
-Python 3.12.13
-```
-
-### Fix data directory permissions
-
-Before deploying n8n, fix the data directory ownership for rootless Podman:
-
-```bash
-mkdir -p ~/data/n8n
-podman unshare chown -R 1000:1000 ~/data/n8n
-```
-
-> **Note:** This is required because n8n runs as user `node` (UID 1000 inside the container). In rootless Podman, UIDs are remapped. Without this step, n8n will fail with `EACCES: permission denied, open '/home/node/.n8n/config'`.
-
-### Deploy n8n
-
-In Dockge, create a new stack named `n8n`:
-
-```yaml
-# ============================================================
-# STMNA Desk -- n8n Workflow Automation
-# Part of: stmna-desk install guide, Section 7
-# Requires: stmna-net network, PostgreSQL running, custom n8n image built
-# ============================================================
-
-x-podman:
-  in_pod: false
-
-services:
-  n8n:
-    # INFO: Custom image with ffmpeg, yt-dlp, pandoc, python3 for Signal workflows
-    # Build first: cd ~/docker/n8n && podman build -t stmna-n8n:latest .
-    image: localhost/stmna-n8n:latest
-    container_name: n8n
-    restart: always
-    ports:
-      # OPTIONAL -- change host port if 5678 conflicts
-      - "5678:5678"
-    environment:
-      # NO ACTION NEEDED -- n8n server config
-      - N8N_HOST=0.0.0.0
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=http
-      # USER INPUT REQUIRED -- your public URL or local IP for webhooks
-      - WEBHOOK_URL=http://YOUR_IP:5678/
-      # NO ACTION NEEDED -- allows Code nodes to use filesystem and subprocess
-      - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path
-      # OPTIONAL -- your timezone (default: UTC)
-      - GENERIC_TIMEZONE=Europe/Amsterdam
-      # NO ACTION NEEDED -- required for some workflow operations
-      - N8N_EXECUTE_COMMAND_ENABLED=true
-      # NO ACTION NEEDED -- extended timeouts for long-running tasks (book translation)
-      - N8N_RUNNERS_HEARTBEAT_INTERVAL=1800
-      - N8N_RUNNERS_TASK_TIMEOUT=43200
-      - EXECUTIONS_TIMEOUT=-1
-      # NO ACTION NEEDED -- disable secure cookie for HTTP access (set to true if using HTTPS)
-      - N8N_SECURE_COOKIE=false
-    volumes:
-      # NO ACTION NEEDED -- persistent n8n data (workflows, credentials, settings)
-      - /home/stmna/data/n8n:/home/node/.n8n
-    networks:
-      - default
-      - stmna-net
-
-networks:
-  default: {}
-  stmna-net:
-    external: true
-```
-
-> **Required:** Set `WEBHOOK_URL` to your server's IP or domain. For local network access: `http://YOUR_IP:5678/`. For public access with HTTPS: `https://n8n.yourdomain.com/`.
-
-> **Note:** Set `N8N_SECURE_COOKIE=true` once you have HTTPS configured via the [network guide](network-guide.md).
-
-**Expected result:** n8n is accessible at `http://YOUR_IP:5678`. On first visit, create an admin account.
-
-Verify:
-
-```bash
-curl -s http://localhost:5678/healthz
-```
-
-**Expected result:**
-
-```json
-{"status":"ok"}
-```
-
----
-
-## Step 8: Open WebUI (Chat Interface)
-
-Open WebUI provides a web-based chat interface for interacting with your local LLMs via llama-swap.
-
-In Dockge, create a new stack named `open-webui`:
-
-```yaml
-# ============================================================
-# STMNA Desk -- Open WebUI
-# Part of: stmna-desk install guide, Section 8
-# Requires: stmna-net network, llama-swap running, PostgreSQL running
-# ============================================================
-
-x-podman:
-  in_pod: false
-
-services:
-  open-webui:
-    # INFO: Chat UI for interacting with local LLMs via llama-swap
-    image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
-    restart: always
-    ports:
-      # OPTIONAL -- change host port if 3000 conflicts
-      - "3000:8080"
-    volumes:
-      # NO ACTION NEEDED -- persistent settings, chat history, uploaded files
-      - /home/stmna/data/open-webui:/app/backend/data
-    environment:
-      # USER INPUT REQUIRED -- llama-swap API endpoint (use your server IP or container hostname)
-      - OPENAI_API_BASE_URL=http://llama-swap:8080/v1
-      # NO ACTION NEEDED -- llama-swap does not require a real key
-      - OPENAI_API_KEY=sk-none
-      # OPTIONAL -- set to false to disable login (single-user mode)
-      - WEBUI_AUTH=true
-      # NO ACTION NEEDED -- uses PGVector for RAG document storage
-      - VECTOR_DB=pgvector
-      # USER INPUT REQUIRED -- PostgreSQL connection string (update password to match your postgres setup)
-      - PGVECTOR_DB_URL=postgresql://voice:YOUR_POSTGRES_PASSWORD@postgres-voice:5432/stmna_signal
-    networks:
-      - default
-      - stmna-net
-
-networks:
-  default: {}
-  stmna-net:
-    external: true
-```
-
-> **Required:** Update the PostgreSQL password in `PGVECTOR_DB_URL` to match the password you set in Step 4.
-
-> **Note:** The `stmna_signal` database must exist before deploying Open WebUI. If you skipped the database creation step in Step 4, Open WebUI will fail to start. See Troubleshooting below.
-
-**Expected result:** Open WebUI is accessible at `http://YOUR_IP:3000`. On first visit, create an admin account.
+> Optional services. Install what you need: vault RAG search, audio summaries, git hosting, AI agent.
 
 ---
 
@@ -612,7 +642,7 @@ In Dockge, create a new stack named `text-embeddings`:
 ```yaml
 # ============================================================
 # STMNA Desk -- Text Embeddings Inference (TEI)
-# Part of: stmna-desk install guide, Section 9
+# Part of: stmna-desk install guide, Step 9 (Extended)
 # Requires: stmna-net network
 # ============================================================
 
@@ -674,7 +704,7 @@ In Dockge, create a new stack named `kokoro-tts`:
 ```yaml
 # ============================================================
 # STMNA Desk -- Kokoro TTS
-# Part of: stmna-desk install guide, Section 10
+# Part of: stmna-desk install guide, Step 10 (Extended)
 # Requires: stmna-net network
 # ============================================================
 
@@ -718,7 +748,85 @@ curl -s http://localhost:9005/v1/audio/voices | python3 -c "import json,sys; pri
 
 ---
 
-## Step 11: Agent Zero (AI Agent)
+## Step 11: Forgejo (Git Hosting)
+
+Forgejo is a self-hosted git forge. Use it to host your vault repository (for the embedding pipeline webhook), workflow exports, and source code.
+
+In Dockge, create a new stack named `forgejo`:
+
+```yaml
+# ============================================================
+# STMNA Desk -- Forgejo (Self-Hosted Git)
+# Part of: stmna-desk install guide, Step 11 (Extended)
+# Requires: stmna-net network
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  forgejo:
+    # INFO: Self-hosted git forge for vault repos, workflow exports, source code
+    image: codeberg.org/forgejo/forgejo:10
+    container_name: forgejo
+    restart: always
+    ports:
+      # OPTIONAL -- HTTP web UI (avoid conflict with Open WebUI on 3000)
+      - "3300:3000"
+      # OPTIONAL -- SSH for git over SSH (remove if not needed)
+      - "2222:22"
+    volumes:
+      # NO ACTION NEEDED -- persistent data (repos, config, database)
+      - /home/stmna/data/forgejo:/data
+    environment:
+      # NO ACTION NEEDED -- Forgejo runs as UID 1000 inside the container
+      - USER_UID=1000
+      - USER_GID=1000
+      # USER INPUT REQUIRED -- your server's domain or IP for clone URLs
+      - FORGEJO__server__ROOT_URL=http://YOUR_IP:3300/
+      # NO ACTION NEEDED -- use built-in SQLite (sufficient for single-user/small-team)
+      - FORGEJO__database__DB_TYPE=sqlite3
+      # OPTIONAL -- disable registration after creating your admin account
+      # - FORGEJO__service__DISABLE_REGISTRATION=true
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true
+```
+
+> **Required:** Set `FORGEJO__server__ROOT_URL` to your server's IP or domain (e.g., `http://10.0.10.54:3300/` or `https://git.yourdomain.com/`). This controls clone URLs displayed in the web UI.
+
+> **Optional:** After creating your admin account on first visit, set `FORGEJO__service__DISABLE_REGISTRATION=true` to prevent public signups.
+
+> **Optional:** Remove the SSH port mapping (`2222:22`) if you only need HTTPS git access.
+
+**Expected result:** Forgejo is accessible at `http://YOUR_IP:3300`. On first visit, complete the installation wizard and create an admin account.
+
+Verify:
+
+```bash
+curl -s http://localhost:3300/api/v1/version
+```
+
+**Expected result:** A JSON response with the Forgejo version (e.g., `{"version":"10.0.0"}`).
+
+### Configure webhook for vault embedding pipeline
+
+If you use the vault embedding pipeline (see [vault-embedding workflow](../workflows/vault-embedding.json)):
+
+1. Create a repository for your vault in Forgejo
+2. Go to the repo Settings > Webhooks > Add Webhook > Forgejo
+3. Set the target URL to `http://n8n:5678/webhook/vault-embedding` (uses container network)
+4. Set the secret to match the webhook secret in your n8n workflow
+5. Select "Push Events" only
+
+---
+
+## Step 12: Agent Zero (AI Agent)
 
 Agent Zero is an autonomous AI agent with memory, tools, and code execution. It connects to llama-swap for LLM inference and TEI for embeddings.
 
@@ -727,7 +835,7 @@ In Dockge, create a new stack named `agent-zero`:
 ```yaml
 # ============================================================
 # STMNA Desk -- Agent Zero (AI Agent)
-# Part of: stmna-desk install guide, Section 11
+# Part of: stmna-desk install guide, Step 12 (Extended)
 # Requires: stmna-net network, llama-swap running, TEI running
 # ============================================================
 
@@ -790,42 +898,58 @@ networks:
 
 ## Verification
 
-After deploying all stacks, verify everything is running:
+After deploying, verify your containers are running. The expected output depends on which tiers you installed.
 
 ```bash
 podman ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
 
-**Expected result:** All containers show "Up" status:
+### Core tier (Steps 1-6) -- 4 containers
 
 ```
 NAMES            STATUS                  PORTS
 dockge           Up X minutes            0.0.0.0:5001->5001/tcp
 postgres-voice   Up X minutes            0.0.0.0:5432->5432/tcp
-n8n              Up X minutes            0.0.0.0:5678->5678/tcp
-kokoro-tts       Up X minutes            0.0.0.0:9005->8880/tcp
-open-webui       Up X minutes            0.0.0.0:3000->8080/tcp
 llama-swap       Up X minutes (healthy)  0.0.0.0:8081->8080/tcp
+open-webui       Up X minutes            0.0.0.0:3000->8080/tcp
+```
+
+### + Automation tier (Steps 7-8) -- 7 containers
+
+```
+NAMES            STATUS                  PORTS
+...core containers above...
+n8n              Up X minutes            0.0.0.0:5678->5678/tcp
 whisper-voice    Up X minutes            0.0.0.0:8083->8083/tcp
 whisper-signal   Up X minutes            0.0.0.0:8084->8084/tcp
-agent-zero       Up X minutes            0.0.0.0:50001->80/tcp
+```
+
+### + Extended tier (Steps 9-12) -- up to 11 containers
+
+```
+NAMES            STATUS                  PORTS
+...core + automation containers above...
 text-embeddings  Up X minutes            0.0.0.0:9003->80/tcp
+kokoro-tts       Up X minutes            0.0.0.0:9005->8880/tcp
+forgejo          Up X minutes            0.0.0.0:3300->3000/tcp
+agent-zero       Up X minutes            0.0.0.0:50001->80/tcp
 ```
 
 ### Port map
 
-| Service | Port | Protocol | Access |
-|---------|------|----------|--------|
-| Dockge | 5001 | HTTP | LAN only |
-| PostgreSQL | 5432 | TCP | LAN only (never expose publicly) |
-| n8n | 5678 | HTTP | LAN or public (webhooks need public access) |
-| Open WebUI | 3000 | HTTP | LAN or Tailscale |
-| llama-swap | 8081 | HTTP | LAN or Tailscale |
-| Whisper (Voice) | 8083 | HTTP | LAN or Tailscale |
-| Whisper (Signal) | 8084 | HTTP | LAN or Tailscale |
-| TEI | 9003 | HTTP | Internal (container network) |
-| Kokoro TTS | 9005 | HTTP | Internal (container network) |
-| Agent Zero | 50001 | HTTP | LAN only |
+| Service | Port | Tier | Protocol | Access |
+|---------|------|------|----------|--------|
+| Dockge | 5001 | Core | HTTP | LAN only |
+| PostgreSQL | 5432 | Core | TCP | LAN only (never expose publicly) |
+| llama-swap | 8081 | Core | HTTP | LAN or Tailscale |
+| Open WebUI | 3000 | Core | HTTP | LAN or Tailscale |
+| n8n | 5678 | Automation | HTTP | LAN or public (webhooks need public access) |
+| Whisper (Voice) | 8083 | Automation | HTTP | LAN or Tailscale |
+| Whisper (Signal) | 8084 | Automation | HTTP | LAN or Tailscale |
+| TEI | 9003 | Extended | HTTP | Internal (container network) |
+| Kokoro TTS | 9005 | Extended | HTTP | Internal (container network) |
+| Forgejo | 3300 | Extended | HTTP | LAN or Tailscale |
+| Agent Zero | 50001 | Extended | HTTP | LAN only |
 
 ---
 

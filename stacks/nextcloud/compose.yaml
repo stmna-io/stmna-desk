@@ -1,0 +1,43 @@
+# ============================================================
+# STMNA Desk -- NextCloud (Sovereign Cloud Storage)
+# Part of: stmna-signal install guide (NextCloud step)
+# Requires: stmna-net network
+# ============================================================
+# NextCloud is used by the Signal pipeline for file drops
+# (incoming content via WebDAV) and audio delivery.
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  nextcloud:
+    # INFO: Sovereign cloud storage with WebDAV API for n8n file operations
+    image: docker.io/library/nextcloud:30-apache
+    container_name: nextcloud
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 8090 conflicts
+      - "8090:80"
+    volumes:
+      # NO ACTION NEEDED -- persistent data (files, config, database)
+      - /home/stmna/data/nextcloud:/var/www/html
+    environment:
+      # USER INPUT REQUIRED -- admin credentials (set on first run only, ignored after)
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD_HERE
+      # NO ACTION NEEDED -- use built-in SQLite (sufficient for single-user/small-team)
+      - SQLITE_DATABASE=nextcloud
+      # USER INPUT REQUIRED -- your server's domain or IP (for trusted domains)
+      # NOTE -- "nextcloud" is the container hostname, needed for n8n WebDAV access via stmna-net
+      - NEXTCLOUD_TRUSTED_DOMAINS=YOUR_IP localhost nextcloud
+      # OPTIONAL -- disable HTTPS enforcement for LAN-only access
+      - OVERWRITEPROTOCOL=http
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

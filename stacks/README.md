@@ -4,17 +4,19 @@ Reference compose files for every service in the STMNA Desk stack. Each director
 
 ## Services
 
-| Stack | Service | Port | Install Guide Section |
-|-------|---------|------|-----------------------|
-| dockge | Container management UI | 5001 | 3 |
-| postgres | PostgreSQL 17 + PGVector | 5432 | 4 |
-| llama-swap | LLM reverse proxy (Vulkan) | 8081 | 5 |
-| whisper | Whisper STT (voice + signal) | 8083, 8084 | 6 |
-| n8n | Workflow automation (custom image) | 5678 | 7 |
-| open-webui | Chat UI | 3000 | 8 |
-| text-embeddings | TEI embedding server | 9003 | 9 |
-| kokoro-tts | Text-to-speech | 9005 | 10 |
-| agent-zero | AI agent | 50001 | 11 |
+| Stack | Service | Port | Tier | Install Guide Step |
+|-------|---------|------|------|--------------------|
+| dockge | Container management UI | 5001 | Core | 3 |
+| postgres | PostgreSQL 17 + PGVector | 5432 | Core | 4 |
+| llama-swap | LLM reverse proxy (Vulkan) | 8081 | Core | 5 |
+| open-webui | Chat UI | 3000 | Core | 6 |
+| n8n | Workflow automation (custom image) | 5678 | Automation | 7 |
+| whisper | Whisper STT (voice + signal) | 8083, 8084 | Automation | 8 |
+| text-embeddings | TEI embedding server | 9003 | Extended | 9 |
+| kokoro-tts | Text-to-speech | 9005 | Extended | 10 |
+| forgejo | Self-hosted git forge | 3300 | Extended | 11 |
+| nextcloud | Sovereign cloud storage | 8090 | Extended | Signal guide |
+| agent-zero | AI agent | 50001 | Extended | 12 |
 
 ## Before you deploy
 
