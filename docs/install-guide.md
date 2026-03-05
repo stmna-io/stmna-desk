@@ -67,6 +67,8 @@ pipx ensurepath
 source ~/.bashrc
 ```
 
+> **Note:** `sudo apt install` requires your user to have sudo privileges and will prompt for a password. If deploying via automated scripts (e.g., Ansible, SSH), ensure sudo is configured for passwordless access or run this step interactively.
+
 Verify:
 
 ```bash
