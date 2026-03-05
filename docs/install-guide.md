@@ -33,7 +33,7 @@ The STMNA Desk stack is organized into three tiers. Install what you need.
 |------|-------|----------|-----------------|
 | **Core** | 1-6 | System Setup, Network, Dockge, PostgreSQL+PGVector, llama-swap, Open WebUI | Chat + local LLM inference. Every user installs this. |
 | **Automation** | 7-8 | n8n (custom image), Whisper (2 instances) | Adding Signal or Voice products. |
-| **Extended** | 9-12 | TEI, Kokoro TTS, Forgejo, Agent Zero | Vault RAG, audio summaries, git hosting, AI agent. Install what you need. |
+| **Extended** | 9-14 | TEI, Kokoro TTS, Forgejo, Agent Zero, Crawl4AI, SearXNG | Vault RAG, audio summaries, git hosting, AI agent, web scraping, search. Install what you need. |
 
 ---
 
@@ -322,7 +322,29 @@ networks:
 
 > **Required:** Download at least one GGUF model to `/home/stmna/models/` before deploying. See the [inference stack reference](inference-stack.md) for recommended models.
 
-> **Required:** Create a `config.yaml` in your llama-swap stack directory. See the [llama-swap documentation](https://github.com/mostlygeek/llama-swap) for configuration format.
+> **Required:** Create a `config.yaml` in your llama-swap stack directory (`~/stacks/llama-swap/config.yaml`). Example minimal config:
+
+```yaml
+# llama-swap config.yaml -- minimal example with one model
+# See https://github.com/mostlygeek/llama-swap for full documentation
+healthCheckTimeout: 300
+models:
+  # USER INPUT REQUIRED -- model name (clients request this name)
+  my-model:
+    # USER INPUT REQUIRED -- path to your GGUF file in /models/
+    cmd: /app/llama-server -m /models/YOUR_MODEL.gguf --host 0.0.0.0 --port 9001 -ngl 99 -fa on --no-mmap -c 32768
+    proxy: http://127.0.0.1:9001
+
+groups:
+  # Models in the same group share a port and are swapped on demand (only one active at a time)
+  default:
+    swap: true
+    exclusive: true
+    members:
+    - my-model
+```
+
+> Each model entry specifies a `cmd` (llama-server command line) and a `proxy` (where to forward requests). Models in the same group share resources -- llama-swap unloads one before loading another. Key flags: `-ngl 99` (GPU layers), `-fa on` (flash attention), `-c 32768` (context length).
 
 > **Note:** The `devices`, `group_add`, and `security_opt` entries are required for GPU passthrough via Vulkan. If you do not have a GPU, remove these lines, but LLM inference will not work.
 
@@ -495,6 +517,9 @@ services:
     volumes:
       # NO ACTION NEEDED -- persistent n8n data (workflows, credentials, settings)
       - /home/stmna/data/n8n:/home/node/.n8n
+      # OPTIONAL -- mount a directory for Signal pipeline output (vault notes, exports)
+      # Required if using STMNA Signal to write processed notes
+      # - /path/to/your/output/directory:/vault
     networks:
       - default
       - stmna-net
@@ -507,7 +532,7 @@ networks:
 
 > **Required:** Set `WEBHOOK_URL` to your server's IP or domain. For local network access: `http://YOUR_IP:5678/`. For public access with HTTPS: `https://n8n.yourdomain.com/`.
 
-> **Note:** Set `N8N_SECURE_COOKIE=true` once you have HTTPS configured via the [network guide](network-guide.md).
+> **Note:** Set `N8N_SECURE_COOKIE=true` once you have HTTPS configured via the [remote access guide](remote-access.md).
 
 **Expected result:** n8n is accessible at `http://YOUR_IP:5678`. On first visit, create an admin account.
 
@@ -896,6 +921,123 @@ networks:
 
 ---
 
+## Step 13: Crawl4AI (Web Scraping)
+
+Crawl4AI provides a web scraping API used by the Signal Worker to extract content from web articles. Required for the Signal pipeline's web content type.
+
+In Dockge, create a new stack named `crawl4ai`:
+
+```yaml
+# ============================================================
+# STMNA Desk -- Crawl4AI (Web Scraping)
+# Part of: stmna-desk install guide, Step 13 (Extended)
+# Requires: stmna-net network
+# ============================================================
+
+x-podman:
+  in_pod: false
+
+services:
+  crawl4ai:
+    # INFO: Web scraping API for extracting article content (used by Signal Worker)
+    image: docker.io/unclecode/crawl4ai:latest
+    container_name: crawl4ai
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 11235 conflicts
+      - "11235:11235"
+    environment:
+      # USER INPUT REQUIRED -- API token for authentication (generate with: openssl rand -hex 16)
+      - CRAWL4AI_API_TOKEN=YOUR_TOKEN_HERE
+      # OPTIONAL -- max concurrent scraping tasks
+      - MAX_CONCURRENT_TASKS=5
+      # NO ACTION NEEDED -- for LLM-based extraction (optional, not used by default)
+      - OPENAI_API_KEY=sk-none
+      - OPENAI_API_BASE=http://llama-swap:8080/v1
+    volumes:
+      # NO ACTION NEEDED -- persistent cache
+      - /home/stmna/data/crawl4ai:/root/.crawl4ai
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true
+```
+
+> **Required:** Set `CRAWL4AI_API_TOKEN` to a strong token. Save it -- the Signal Worker needs this token to authenticate scraping requests.
+
+Verify:
+
+```bash
+curl -s http://localhost:11235/health
+```
+
+**Expected result:** A JSON response indicating the service is healthy.
+
+---
+
+## Step 14: SearXNG (Search Engine)
+
+SearXNG is a privacy-respecting metasearch engine. The Signal Worker uses it for web search queries. Optional but recommended.
+
+In Dockge, create a new stack named `searxng`:
+
+```yaml
+# ============================================================
+# STMNA Desk -- SearXNG (Search Engine)
+# Part of: stmna-desk install guide, Step 14 (Extended)
+# ============================================================
+# NOTE: SearXNG is not on stmna-net because it does not need
+# to be reached by other containers. n8n calls it via host port.
+
+x-podman:
+  in_pod: false
+
+services:
+  searxng:
+    # INFO: Privacy-respecting metasearch engine
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
+    restart: always
+    ports:
+      # OPTIONAL -- change host port if 8888 conflicts
+      - "8888:8080"
+    volumes:
+      # NO ACTION NEEDED -- persistent settings
+      - /home/stmna/data/searxng:/etc/searxng:rw
+    environment:
+      # USER INPUT REQUIRED -- your server's IP or domain
+      - SEARXNG_BASE_URL=http://YOUR_IP:8888/
+      # USER INPUT REQUIRED -- generate a secret (openssl rand -hex 16)
+      # NOTE -- literal $ signs must be doubled ($$) in compose files
+      - SEARXNG_SECRET=YOUR_SECRET_HERE
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+
+networks: {}
+```
+
+> **Note:** SearXNG uses port 8888 on the host (mapped from container port 8080) to avoid conflicts with other services on port 8080.
+
+> **Note:** If your `SEARXNG_SECRET` contains `$` characters, double them (`$$`) in the compose file. Docker/Podman Compose interprets `$` as variable substitution.
+
+Verify:
+
+```bash
+curl -s http://localhost:8888/ | head -5
+```
+
+**Expected result:** HTML content from the SearXNG search page.
+
+---
+
 ## Verification
 
 After deploying, verify your containers are running. The expected output depends on which tiers you installed.
@@ -924,7 +1066,7 @@ whisper-voice    Up X minutes            0.0.0.0:8083->8083/tcp
 whisper-signal   Up X minutes            0.0.0.0:8084->8084/tcp
 ```
 
-### + Extended tier (Steps 9-12) -- up to 11 containers
+### + Extended tier (Steps 9-14) -- up to 13 containers
 
 ```
 NAMES            STATUS                  PORTS
@@ -933,6 +1075,8 @@ text-embeddings  Up X minutes            0.0.0.0:9003->80/tcp
 kokoro-tts       Up X minutes            0.0.0.0:9005->8880/tcp
 forgejo          Up X minutes            0.0.0.0:3300->3000/tcp
 agent-zero       Up X minutes            0.0.0.0:50001->80/tcp
+crawl4ai         Up X minutes            0.0.0.0:11235->11235/tcp
+searxng          Up X minutes            0.0.0.0:8888->8080/tcp
 ```
 
 ### Port map
@@ -950,6 +1094,8 @@ agent-zero       Up X minutes            0.0.0.0:50001->80/tcp
 | Kokoro TTS | 9005 | Extended | HTTP | Internal (container network) |
 | Forgejo | 3300 | Extended | HTTP | LAN or Tailscale |
 | Agent Zero | 50001 | Extended | HTTP | LAN only |
+| Crawl4AI | 11235 | Extended | HTTP | Internal (container network) |
+| SearXNG | 8888 | Extended | HTTP | LAN only |
 
 ---
 
@@ -1052,4 +1198,4 @@ Or open a new terminal session.
 
 - [Signal install guide](https://f.slowdawn.cc/stmna-io/stmna-signal/src/branch/main/docs/install-guide.md) -- add the Signal content pipeline
 - [Voice install guide](https://f.slowdawn.cc/stmna-io/stmna-voice/src/branch/main/docs/install-guide.md) -- add voice transcription
-- [Network guide](network-guide.md) -- set up remote access via Tailscale or Headscale + Caddy
+- [Remote access guide](remote-access.md) -- set up remote access via Tailscale + Caddy reverse proxy

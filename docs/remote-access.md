@@ -79,6 +79,9 @@ Once on the Tailscale network, services are accessible by IP and port:
 | Dockge | `http://desk:5001` | 5001 |
 | Agent Zero | `http://desk:50001` | 50001 |
 | llama-swap API | `http://desk:8081` | 8081 |
+| Forgejo | `http://desk:3300` | 3300 |
+| NextCloud | `http://desk:8090` | 8090 |
+| SearXNG | `http://desk:8888` | 8888 |
 
 Replace `desk` with your Tailscale MagicDNS hostname or IP.
 

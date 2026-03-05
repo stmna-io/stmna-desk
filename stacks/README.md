@@ -17,6 +17,8 @@ Reference compose files for every service in the STMNA Desk stack. Each director
 | forgejo | Self-hosted git forge | 3300 | Extended | 11 |
 | nextcloud | Sovereign cloud storage | 8090 | Extended | Signal guide |
 | agent-zero | AI agent | 50001 | Extended | 12 |
+| crawl4ai | Web scraping API | 11235 | Extended | 13 |
+| searxng | Search engine | 8888 | Extended | 14 |
 
 ## Before you deploy
 
