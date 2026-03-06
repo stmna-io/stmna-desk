@@ -49,6 +49,21 @@ services:
 
 See the [install guide](../../docs/install-guide.md) for full compose configuration.
 
+## Pre-built Image
+
+A pre-built image is published to GitHub Container Registry on every push to `main`:
+
+```bash
+podman pull ghcr.io/stmna-io/stmna-n8n:latest
+```
+
+Or reference it directly in your compose file:
+```yaml
+image: ghcr.io/stmna-io/stmna-n8n:latest
+```
+
+See [stacks/n8n/compose.yaml](../../stacks/n8n/compose.yaml) for the full deployment config.
+
 ## Pinned Versions
 
 The base image is pinned to `n8nio/n8n:2.9.0` for reproducibility. To update:
