@@ -1,8 +1,6 @@
-# ============================================================
-# STMNA Desk -- PostgreSQL + PGVector
-# Part of: stmna-desk install guide, Section 5
-# Requires: stmna-net network
-# ============================================================
+# PostgreSQL + PGVector
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 4 for setup instructions
 
 x-podman:
   in_pod: false
@@ -12,20 +10,15 @@ services:
     # INFO: PostgreSQL 17 with pgvector extension for Signal pipeline and vault RAG
     image: docker.io/pgvector/pgvector:pg17
     container_name: postgres-voice
-    restart: unless-stopped
+    restart: always
     ports:
-      # OPTIONAL -- change host port if 5432 conflicts
-      - "5432:5432"
+      - "5432:5432"  # OPTIONAL: adjust to taste
     environment:
-      # USER INPUT REQUIRED -- name for the default database
-      POSTGRES_DB: stmna_voice
-      # USER INPUT REQUIRED -- database username
-      POSTGRES_USER: voice
-      # USER INPUT REQUIRED -- generate a strong password
-      POSTGRES_PASSWORD: YOUR_POSTGRES_PASSWORD
+      POSTGRES_DB: stmna_voice  # REQUIRED: replace with your database name
+      POSTGRES_USER: voice  # REQUIRED: replace with your database username
+      POSTGRES_PASSWORD: YOUR_POSTGRES_PASSWORD  # REQUIRED: replace with a strong password
     volumes:
-      # NO ACTION NEEDED -- persistent data storage
-      - /home/stmna/data/postgres:/var/lib/postgresql/data
+      - /home/stmna/data/postgres:/var/lib/postgresql/data  # NO ACTION NEEDED
     networks:
       - default
       - stmna-net

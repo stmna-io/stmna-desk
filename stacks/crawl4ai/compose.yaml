@@ -1,8 +1,6 @@
-# ============================================================
-# STMNA Desk -- Crawl4AI (Web Scraping)
-# Part of: stmna-desk install guide, Step 13 (Extended)
-# Requires: stmna-net network
-# ============================================================
+# Crawl4AI (Web Scraping)
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 13 for setup instructions
 
 x-podman:
   in_pod: false
@@ -14,19 +12,14 @@ services:
     container_name: crawl4ai
     restart: always
     ports:
-      # OPTIONAL -- change host port if 11235 conflicts
-      - "11235:11235"
+      - "11235:11235"  # OPTIONAL: adjust to taste
     environment:
-      # USER INPUT REQUIRED -- API token for authentication (generate with: openssl rand -hex 16)
-      - CRAWL4AI_API_TOKEN=YOUR_TOKEN_HERE
-      # OPTIONAL -- max concurrent scraping tasks
-      - MAX_CONCURRENT_TASKS=5
-      # NO ACTION NEEDED -- for LLM-based extraction (optional, not used by default)
-      - OPENAI_API_KEY=sk-none
-      - OPENAI_API_BASE=http://llama-swap:8080/v1
+      - CRAWL4AI_API_TOKEN=YOUR_TOKEN_HERE  # REQUIRED: replace with a token (openssl rand -hex 16)
+      - MAX_CONCURRENT_TASKS=5  # OPTIONAL: adjust to taste
+      - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED
+      - OPENAI_API_BASE=http://llama-swap:8080/v1  # NO ACTION NEEDED
     volumes:
-      # NO ACTION NEEDED -- persistent cache
-      - /home/stmna/data/crawl4ai:/root/.crawl4ai
+      - /home/stmna/data/crawl4ai:/root/.crawl4ai  # NO ACTION NEEDED
     networks:
       - default
       - stmna-net

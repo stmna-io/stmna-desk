@@ -23,15 +23,15 @@ Reference compose files for every service in the STMNA Desk stack. Each director
 ## Before you deploy
 
 1. Follow the [install guide](../docs/install-guide.md) for step-by-step instructions
-2. Replace all `USER INPUT REQUIRED` values in the compose files
+2. Replace all `REQUIRED:` values in the compose files
 3. Create the `stmna-net` network: `podman network create stmna-net`
 4. Deploy in the order listed above (dependencies flow top to bottom)
 
 ## Compose file conventions
 
-- `USER INPUT REQUIRED` -- you must change this value
-- `OPTIONAL` -- safe defaults provided, change if needed
-- `NO ACTION NEEDED` -- leave as-is
-- `NOTE` -- read the comment for context
+- `REQUIRED:` -- you must replace this value before deploying
+- `OPTIONAL:` -- safe defaults provided, adjust to taste
+- `NO ACTION NEEDED` -- internal values, leave as-is
+- `NOTE:` -- read the comment for context
 
 All files include `x-podman: in_pod: false` for rootless Podman compatibility.

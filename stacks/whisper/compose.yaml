@@ -1,8 +1,6 @@
-# ============================================================
-# STMNA Desk -- Whisper Server (Speech-to-Text)
-# Part of: stmna-desk install guide, Section 7
-# Requires: stmna-net network, GPU (Vulkan) for transcription
-# ============================================================
+# Whisper Server (Speech-to-Text)
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 8 for setup instructions
 
 x-podman:
   in_pod: false
@@ -16,17 +14,15 @@ services:
     read_only: true
     init: true
     ports:
-      # OPTIONAL -- change if 8083 conflicts
-      - "8083:8083"
-    # NOTE -- GPU passthrough (remove if no GPU)
+      - "8083:8083"  # OPTIONAL: adjust to taste
+    # NOTE: GPU passthrough (remove if no GPU)
     #devices:
     #  - /dev/dri:/dev/dri
     tmpfs:
       - /root/.cache/mesa_shader_cache
       - /app
     volumes:
-      # USER INPUT REQUIRED -- path to whisper model files
-      - /home/stmna/models:/models:ro
+      - /home/stmna/models:/models:ro  # REQUIRED: replace with your path to whisper models
     command:
       - whisper-server
       - "-m"
@@ -53,15 +49,14 @@ services:
     read_only: true
     init: true
     ports:
-      # OPTIONAL -- change if 8084 conflicts
-      - "8084:8084"
+      - "8084:8084"  # OPTIONAL: adjust to taste
     #devices:
     #  - /dev/dri:/dev/dri
     tmpfs:
       - /root/.cache/mesa_shader_cache
       - /app
     volumes:
-      - /home/stmna/models:/models:ro
+      - /home/stmna/models:/models:ro  # REQUIRED: replace with your path to whisper models
     command:
       - whisper-server
       - "-m"

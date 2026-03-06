@@ -1,7 +1,7 @@
-# ============================================================
-# STMNA Desk -- SearXNG (Search Engine)
-# Part of: stmna-desk install guide, Step 14 (Extended)
-# ============================================================
+# SearXNG (Search Engine)
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 14 for setup instructions
+
 # NOTE: SearXNG is not on stmna-net because it does not need
 # to be reached by other containers. n8n calls it via host port.
 
@@ -15,17 +15,13 @@ services:
     container_name: searxng
     restart: always
     ports:
-      # OPTIONAL -- change host port if 8888 conflicts
-      - "8888:8080"
+      - "8888:8080"  # OPTIONAL: adjust to taste
     volumes:
-      # NO ACTION NEEDED -- persistent settings
-      - /home/stmna/data/searxng:/etc/searxng:rw
+      - /home/stmna/data/searxng:/etc/searxng:rw  # NO ACTION NEEDED
     environment:
-      # USER INPUT REQUIRED -- your server's IP or domain
-      - SEARXNG_BASE_URL=http://YOUR_IP:8888/
-      # USER INPUT REQUIRED -- generate a secret (openssl rand -hex 16)
-      # NOTE -- literal $ signs must be doubled ($$) in compose files
-      - SEARXNG_SECRET=YOUR_SECRET_HERE
+      - SEARXNG_BASE_URL=http://YOUR_IP:8888/  # REQUIRED: replace with your server IP or domain
+      # NOTE: literal $ signs must be doubled ($$) in compose files
+      - SEARXNG_SECRET=YOUR_SECRET_HERE  # REQUIRED: replace with a secret (openssl rand -hex 16)
     cap_drop:
       - ALL
     cap_add:

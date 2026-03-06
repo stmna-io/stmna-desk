@@ -1,8 +1,6 @@
-# ============================================================
-# STMNA Desk -- Forgejo (Self-Hosted Git)
-# Part of: stmna-desk install guide, Step 11 (Extended)
-# Requires: stmna-net network
-# ============================================================
+# Forgejo (Self-Hosted Git)
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 11 for setup instructions
 
 x-podman:
   in_pod: false
@@ -14,22 +12,16 @@ services:
     container_name: forgejo
     restart: always
     ports:
-      # OPTIONAL -- HTTP web UI (avoid conflict with Open WebUI on 3000)
-      - "3300:3000"
-      # OPTIONAL -- SSH for git over SSH (remove if not needed)
-      - "2222:22"
+      - "3300:3000"  # OPTIONAL: HTTP web UI (avoid conflict with Open WebUI on 3000)
+      - "2222:22"  # OPTIONAL: SSH for git over SSH (remove if not needed)
     volumes:
-      # NO ACTION NEEDED -- persistent data (repos, config, database)
-      - /home/stmna/data/forgejo:/data
+      - /home/stmna/data/forgejo:/data  # NO ACTION NEEDED
     environment:
-      # NO ACTION NEEDED -- Forgejo runs as UID 1000 inside the container
-      - USER_UID=1000
-      - USER_GID=1000
-      # USER INPUT REQUIRED -- your server's domain or IP for clone URLs
-      - FORGEJO__server__ROOT_URL=http://YOUR_IP:3300/
-      # NO ACTION NEEDED -- use built-in SQLite (sufficient for single-user/small-team)
-      - FORGEJO__database__DB_TYPE=sqlite3
-      # OPTIONAL -- disable registration after creating your admin account
+      - USER_UID=1000  # NO ACTION NEEDED
+      - USER_GID=1000  # NO ACTION NEEDED
+      - FORGEJO__server__ROOT_URL=http://YOUR_IP:3300/  # REQUIRED: replace with your server IP or domain
+      - FORGEJO__database__DB_TYPE=sqlite3  # NO ACTION NEEDED
+      # OPTIONAL: uncomment to disable registration after creating your admin account
       # - FORGEJO__service__DISABLE_REGISTRATION=true
     networks:
       - default

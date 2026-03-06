@@ -1,8 +1,6 @@
-# ============================================================
-# STMNA Desk -- Agent Zero (AI Agent)
-# Part of: stmna-desk install guide, Section 11
-# Requires: stmna-net network, llama-swap running, TEI running
-# ============================================================
+# Agent Zero (AI Agent)
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 12 for setup instructions
 
 x-podman:
   in_pod: false
@@ -12,39 +10,36 @@ services:
     # INFO: Autonomous AI agent with memory, tools, and code execution
     image: docker.io/agent0ai/agent-zero:latest
     container_name: agent-zero
-    restart: unless-stopped
+    restart: always
     ports:
-      # OPTIONAL -- change host port if 50001 conflicts
-      - "50001:80"
+      - "50001:80"  # OPTIONAL: adjust to taste
     volumes:
-      # NO ACTION NEEDED -- persistent user data
-      - ./usr:/a0/usr
-      - ./agents:/a0/agents
-      - ./work_dir:/a0/work_dir
-      - ./knowledge:/a0/knowledge
-      - ./logs:/a0/logs
+      - ./usr:/a0/usr  # NO ACTION NEEDED
+      - ./agents:/a0/agents  # NO ACTION NEEDED
+      - ./work_dir:/a0/work_dir  # NO ACTION NEEDED
+      - ./knowledge:/a0/knowledge  # NO ACTION NEEDED
+      - ./logs:/a0/logs  # NO ACTION NEEDED
     environment:
-      # USER INPUT REQUIRED -- chat model (must match a model in your llama-swap config)
-      - A0_SET_chat_model_provider=openai
-      - A0_SET_chat_model_name=qwen3.5-35b-nothink
-      - A0_SET_chat_model_api_base=http://llama-swap:8080/v1
-      - A0_SET_chat_model_ctx_length=65536
-      # USER INPUT REQUIRED -- utility model
-      - A0_SET_util_model_provider=openai
-      - A0_SET_util_model_name=qwen3.5-35b-nothink
-      - A0_SET_util_model_api_base=http://llama-swap:8080/v1
-      - A0_SET_util_model_ctx_length=65536
-      # USER INPUT REQUIRED -- embedding model (TEI container)
-      - A0_SET_embed_model_provider=openai
-      - A0_SET_embed_model_name=openai/pplx-embed-context-v1-0.6b
-      - A0_SET_embed_model_api_base=http://text-embeddings:80/v1
-      # USER INPUT REQUIRED -- browser/vision model
-      - A0_SET_browser_model_provider=openai
-      - A0_SET_browser_model_name=qwen3.5-35b-nothink
-      - A0_SET_browser_model_api_base=http://llama-swap:8080/v1
-      - A0_SET_browser_model_ctx_length=65536
-      # NO ACTION NEEDED -- llama-swap does not require a real key
-      - API_KEY_OPENAI=sk-not-needed
+      # Chat model (must match a model in your llama-swap config)
+      - A0_SET_chat_model_provider=openai  # REQUIRED: replace with your model provider
+      - A0_SET_chat_model_name=qwen3.5-35b-nothink  # REQUIRED: replace with your model name
+      - A0_SET_chat_model_api_base=http://llama-swap:8080/v1  # REQUIRED: replace with your LLM endpoint
+      - A0_SET_chat_model_ctx_length=65536  # REQUIRED: must match llama-swap -c value
+      # Utility model
+      - A0_SET_util_model_provider=openai  # REQUIRED: replace with your model provider
+      - A0_SET_util_model_name=qwen3.5-35b-nothink  # REQUIRED: replace with your model name
+      - A0_SET_util_model_api_base=http://llama-swap:8080/v1  # REQUIRED: replace with your LLM endpoint
+      - A0_SET_util_model_ctx_length=65536  # REQUIRED: must match llama-swap -c value
+      # Embedding model (TEI container)
+      - A0_SET_embed_model_provider=openai  # REQUIRED: replace with your embedding provider
+      - A0_SET_embed_model_name=openai/pplx-embed-context-v1-0.6b  # REQUIRED: replace with your embedding model
+      - A0_SET_embed_model_api_base=http://text-embeddings:80/v1  # REQUIRED: replace with your TEI endpoint
+      # Browser/vision model
+      - A0_SET_browser_model_provider=openai  # REQUIRED: replace with your model provider
+      - A0_SET_browser_model_name=qwen3.5-35b-nothink  # REQUIRED: replace with your model name
+      - A0_SET_browser_model_api_base=http://llama-swap:8080/v1  # REQUIRED: replace with your LLM endpoint
+      - A0_SET_browser_model_ctx_length=65536  # REQUIRED: must match llama-swap -c value
+      - API_KEY_OPENAI=sk-not-needed  # NO ACTION NEEDED
     networks:
       - stmna-net
 

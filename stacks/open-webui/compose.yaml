@@ -1,8 +1,6 @@
-# ============================================================
-# STMNA Desk -- Open WebUI
-# Part of: stmna-desk install guide, Section 8
-# Requires: stmna-net network, PostgreSQL running (for pgvector)
-# ============================================================
+# Open WebUI
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See docs/install-guide.md Step 6 for setup instructions
 
 x-podman:
   in_pod: false
@@ -14,22 +12,15 @@ services:
     container_name: open-webui
     restart: always
     ports:
-      # OPTIONAL -- change host port if 3000 conflicts
-      - "3000:8080"
+      - "3000:8080"  # OPTIONAL: adjust to taste
     volumes:
-      # NO ACTION NEEDED -- persistent settings, chat history, uploaded files
-      - /home/stmna/data/open-webui:/app/backend/data
+      - /home/stmna/data/open-webui:/app/backend/data  # NO ACTION NEEDED
     environment:
-      # USER INPUT REQUIRED -- llama-swap API endpoint (use Desk IP or container hostname)
-      - OPENAI_API_BASE_URL=http://llama-swap:8080/v1
-      # NO ACTION NEEDED -- llama-swap does not require a real key
-      - OPENAI_API_KEY=sk-none
-      # OPTIONAL -- set to false to disable login (single-user mode)
-      - WEBUI_AUTH=true
-      # NO ACTION NEEDED -- uses PGVector for RAG document storage
-      - VECTOR_DB=pgvector
-      # USER INPUT REQUIRED -- PostgreSQL connection string (update password to match your postgres setup)
-      - PGVECTOR_DB_URL=postgresql://voice:YOUR_POSTGRES_PASSWORD@postgres-voice:5432/stmna_signal
+      - OPENAI_API_BASE_URL=http://llama-swap:8080/v1  # REQUIRED: replace with your llama-swap endpoint
+      - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED
+      - WEBUI_AUTH=true  # OPTIONAL: set to false for single-user mode
+      - VECTOR_DB=pgvector  # NO ACTION NEEDED
+      - PGVECTOR_DB_URL=postgresql://voice:YOUR_POSTGRES_PASSWORD@postgres-voice:5432/stmna_signal  # REQUIRED: replace password to match your postgres setup
     networks:
       - default
       - stmna-net

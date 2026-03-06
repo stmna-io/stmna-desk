@@ -1,11 +1,9 @@
-# ============================================================
-# STMNA Desk -- NextCloud (Sovereign Cloud Storage)
-# Part of: stmna-signal install guide (NextCloud step)
-# Requires: stmna-net network
-# ============================================================
-# NextCloud is used by the Signal pipeline for file drops
+# NextCloud (Sovereign Cloud Storage)
+# Part of STMNA Desk — https://github.com/stmna-io/stmna-desk
+# See stmna-signal docs for setup instructions
+
+# NOTE: NextCloud is used by the Signal pipeline for file drops
 # (incoming content via WebDAV) and audio delivery.
-# ============================================================
 
 x-podman:
   in_pod: false
@@ -17,22 +15,16 @@ services:
     container_name: nextcloud
     restart: always
     ports:
-      # OPTIONAL -- change host port if 8090 conflicts
-      - "8090:80"
+      - "8090:80"  # OPTIONAL: adjust to taste
     volumes:
-      # NO ACTION NEEDED -- persistent data (files, config, database)
-      - /home/stmna/data/nextcloud:/var/www/html
+      - /home/stmna/data/nextcloud:/var/www/html  # NO ACTION NEEDED
     environment:
-      # USER INPUT REQUIRED -- admin credentials (set on first run only, ignored after)
-      - NEXTCLOUD_ADMIN_USER=admin
-      - NEXTCLOUD_ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD_HERE
-      # NO ACTION NEEDED -- use built-in SQLite (sufficient for single-user/small-team)
-      - SQLITE_DATABASE=nextcloud
-      # USER INPUT REQUIRED -- your server's domain or IP (for trusted domains)
-      # NOTE -- "nextcloud" is the container hostname, needed for n8n WebDAV access via stmna-net
-      - NEXTCLOUD_TRUSTED_DOMAINS=YOUR_IP localhost nextcloud
-      # OPTIONAL -- disable HTTPS enforcement for LAN-only access
-      - OVERWRITEPROTOCOL=http
+      - NEXTCLOUD_ADMIN_USER=admin  # REQUIRED: replace with your admin username
+      - NEXTCLOUD_ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD_HERE  # REQUIRED: replace with a strong password
+      - SQLITE_DATABASE=nextcloud  # NO ACTION NEEDED
+      # NOTE: "nextcloud" is the container hostname, needed for n8n WebDAV access via stmna-net
+      - NEXTCLOUD_TRUSTED_DOMAINS=YOUR_IP localhost nextcloud  # REQUIRED: replace YOUR_IP with your server IP
+      - OVERWRITEPROTOCOL=http  # OPTIONAL: set to https if using a reverse proxy with TLS
     networks:
       - default
       - stmna-net
