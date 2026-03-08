@@ -21,7 +21,7 @@ services:
       - WEBHOOK_URL=http://YOUR_IP:5678/  # REQUIRED: replace with your public URL or local IP
       - N8N_RUNNERS_ENABLED=true  # NO ACTION NEEDED
       - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path  # NO ACTION NEEDED
-      - GENERIC_TIMEZONE=Europe/Amsterdam  # OPTIONAL: your timezone (default: UTC)
+      - GENERIC_TIMEZONE=YOUR_TIMEZONE  # OPTIONAL: your timezone (e.g. Europe/Berlin, America/New_York, default: UTC)
       - N8N_EXECUTE_COMMAND_ENABLED=true  # NO ACTION NEEDED
       - N8N_RUNNERS_HEARTBEAT_INTERVAL=1800  # NO ACTION NEEDED
       - N8N_RUNNERS_TASK_TIMEOUT=43200  # NO ACTION NEEDED

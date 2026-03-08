@@ -30,10 +30,10 @@ services:
       - A0_SET_util_model_name=qwen3.5-35b-nothink  # REQUIRED: replace with your model name
       - A0_SET_util_model_api_base=http://llama-swap:8080/v1  # REQUIRED: replace with your LLM endpoint
       - A0_SET_util_model_ctx_length=65536  # REQUIRED: must match llama-swap -c value
-      # Embedding model (TEI container)
-      - A0_SET_embed_model_provider=openai  # REQUIRED: replace with your embedding provider
-      - A0_SET_embed_model_name=openai/pplx-embed-context-v1-0.6b  # REQUIRED: replace with your embedding model
-      - A0_SET_embed_model_api_base=http://text-embeddings:80/v1  # REQUIRED: replace with your TEI endpoint
+      # OPTIONAL: configure an embedding provider if you want Agent Zero to use RAG
+      # - A0_SET_embed_model_provider=openai
+      # - A0_SET_embed_model_name=your-embedding-model
+      # - A0_SET_embed_model_api_base=http://your-embedding-service/v1
       # Browser/vision model
       - A0_SET_browser_model_provider=openai  # REQUIRED: replace with your model provider
       - A0_SET_browser_model_name=qwen3.5-35b-nothink  # REQUIRED: replace with your model name

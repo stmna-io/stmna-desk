@@ -19,8 +19,6 @@ services:
       - OPENAI_API_BASE_URL=http://llama-swap:8080/v1  # REQUIRED: replace with your llama-swap endpoint
       - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED
       - WEBUI_AUTH=true  # OPTIONAL: set to false for single-user mode
-      - VECTOR_DB=pgvector  # NO ACTION NEEDED
-      - PGVECTOR_DB_URL=postgresql://voice:YOUR_POSTGRES_PASSWORD@postgres-voice:5432/stmna_signal  # REQUIRED: replace password to match your postgres setup
     networks:
       - default
       - stmna-net

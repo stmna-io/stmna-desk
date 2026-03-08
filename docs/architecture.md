@@ -13,8 +13,6 @@ How all the pieces of the STMNA stack connect, why they're structured this way, 
   Signal app ------+  n8n (5678)                                       |
   (messages,        |    |-- Signal_Ingestion -- Signal_Worker          |
    URLs, audio)     |    |-- Signal_Cleanup                             |
-                    |    |-- Vault Ops (read/write/search)              |
-                    |    |-- Vault Embedding Pipeline                   |
                     |    +-- STMNA_Voice                                |
                     |                                                    |
                     |  llama-swap (8081) -- llama.cpp (Vulkan)          |
@@ -23,10 +21,9 @@ How all the pieces of the STMNA stack connect, why they're structured this way, 
                     |    +-- Qwen3-4B (voice, always-on)               |
                     |                                                    |
                     |  whisper.cpp (8083/8084) -- STT                   |
-                    |  TEI (9003) -- embeddings                         |
                     |  Kokoro TTS (9005) -- audio generation            |
-                    |  PostgreSQL + PGVector (5432)                     |
-                    |  Open WebUI (3000) -- chat + RAG                  |
+                    |  PostgreSQL (5432)                                |
+                    |  Open WebUI (3000) -- chat UI                     |
                     |  SearXNG (8888) -- web search                     |
                     |  Crawl4AI (11235) -- web scraping                 |
                     |  Agent Zero (50001) -- AI agent                   |
@@ -60,7 +57,7 @@ This split exists because public endpoints need a stable IP and TLS certificates
 
 ### Orchestration Layer (n8n)
 
-n8n handles all workflow automation. Seven active workflows coordinate the pipelines:
+n8n handles all workflow automation. Active workflows coordinate the pipelines:
 
 | Workflow | What It Does |
 |----------|-------------|
@@ -68,8 +65,6 @@ n8n handles all workflow automation. Seven active workflows coordinate the pipel
 | Signal_Worker | Processes queued jobs: download, transcribe, summarize, translate, TTS, vault write |
 | Signal_Cleanup | Daily cache purge and deferred message delivery |
 | Signal_NextCloud | Monitors NextCloud folders for file drops |
-| Vault Ops | 12-action API for vault file operations and semantic search |
-| Vault Embedding Pipeline | Auto-embeds vault changes on git push (Forgejo webhook) |
 | STMNA_Voice | Webhook-triggered voice transcription pipeline |
 
 n8n runs in a custom container with ffmpeg and yt-dlp baked in. Code nodes have access to `fs`, `child_process`, and `path` for operations that need shell-level control (audio conversion, LLM API calls via spawn).
@@ -79,20 +74,21 @@ n8n runs in a custom container with ffmpeg and yt-dlp baked in. Code nodes have 
 Three interfaces serve different interaction patterns:
 
 - **Signal app:** Mobile-first, async. Send a URL, get a vault note back minutes later. The primary input method for content processing.
-- **Open WebUI:** Desktop chat interface. Interactive conversations with Qwen models, SearXNG web search, and vault RAG search. Best for research and exploration.
-- **Agent Zero:** Autonomous AI agent with tool use. Can search the vault, browse the web, and execute multi-step tasks. LAN-only access.
+- **Open WebUI:** Desktop chat interface. Interactive conversations with Qwen models and SearXNG web search. Best for research and exploration.
+- **Agent Zero:** Autonomous AI agent with tool use. Can browse the web and execute multi-step tasks. LAN-only access.
 
-### Knowledge Layer (Vault + PGVector)
+### Knowledge Layer (Vault)
 
-Content flows through a loop: ingest, process, embed, store, retrieve.
+The knowledge store is an Obsidian-compatible collection of markdown files in a Forgejo git repository. Content arrives via Signal, NextCloud, or direct webhook. n8n workflows extract, transcribe, summarize, and translate. The results are written as markdown notes in the vault.
 
-1. **Ingest:** Content arrives via Signal, NextCloud, or direct webhook
-2. **Process:** n8n workflows extract, transcribe, summarize, and translate
-3. **Store:** Processed content is written as markdown notes in the Obsidian vault
-4. **Embed:** On git push, the Embedding Pipeline chunks new content and stores vectors in PGVector
-5. **Retrieve:** Semantic search via the Vault Ops webhook returns ranked chunks with source attribution
+The vault is designed around portability and composability:
 
-The vault itself is an Obsidian-compatible collection of markdown files in a Forgejo git repository. Plain text, version-controlled, human-readable. PGVector provides the semantic search layer on top, but the vault is the source of truth, not the vector database.
+- **Plain text:** Open any file in any text editor, no special tooling required
+- **Version-controlled:** Every change is a git commit with full diff history
+- **Composable:** Other tools (n8n, Claude.ai, agents) interact with plain text via webhooks
+- **Portable:** Move to any editor or system by copying a folder
+
+Semantic search can be added on top of the vault using embedding models and a vector database, but the vault itself is the source of truth. If the search layer goes down, the vault is unaffected.
 
 ---
 
@@ -126,7 +122,7 @@ The knowledge layer is built on an Obsidian vault (markdown files in git), not a
 - **Human-readable:** Open any file in any text editor, no special tooling required
 - **Composable:** Other tools (n8n, Claude.ai, agents) interact with plain text via webhooks
 
-PGVector provides semantic search, but the vector database is a derived index, not the primary store. If PGVector goes down, the vault is unaffected. If the vault is rebuilt from git, PGVector re-indexes automatically via the Embedding Pipeline.
+The vault is the primary store, not any derived index. Semantic search is a layer on top, not a dependency.
 
 ### Rootless Podman over Docker
 
@@ -135,22 +131,6 @@ Podman runs all containers without a root daemon. If a container is compromised,
 Docker's daemon model requires a root process. Podman's daemonless, fork-exec model means each container is a child process of the user who started it. This is a meaningful security improvement for a machine that runs untrusted workloads (web scraping, processing arbitrary URLs from Signal messages).
 
 The trade-off: some Docker-native tooling doesn't work. Compose file syntax needs `x-podman: in_pod: false`. Container networking behaves slightly differently. Dockge only tracks containers it starts itself. None of these are blockers, but they add friction during initial setup.
-
----
-
-## Data Flows
-
-### Signal content ingestion
-
-User sends a YouTube URL via Signal. Signal_Ingestion parses the message, checks the content cache in PostgreSQL, and queues a job. Signal_Worker picks up the job, downloads the audio with yt-dlp, transcribes it with whisper.cpp, summarizes it with Qwen3.5-35B, optionally translates (TEaR 3-pass with Qwen3.5-122B) and generates TTS audio (Kokoro). The result is written as an Obsidian vault note via the Vault Ops webhook, the audio is uploaded to NextCloud, and a confirmation is sent back through Signal. For a 42-minute YouTube video, the full pipeline completes in about 2 minutes.
-
-### Vault search
-
-A query arrives via Claude.ai, Open WebUI, or Agent Zero. The query text is embedded using TEI (pplx-embed-context-v1, 1024 dimensions). PGVector runs a cosine similarity search against the vault_embeddings table. Ranked chunks are returned with file paths, heading context, and relevance scores. The search endpoint is a single n8n webhook (`POST /webhook/vault` with `action: search`), so all consumers use the same search logic.
-
-### Voice transcription
-
-Audio arrives via HTTP POST. FFmpeg converts it to 16kHz mono WAV. Whisper.cpp transcribes with bilingual prompting and anti-hallucination parameters. A 5-method hallucination filter catches phantom phrases and garbage output. Qwen3-4B cleans the transcript (grammar, punctuation) without changing meaning. The whole round-trip averages 2.4 seconds across 423 tested recordings.
 
 ---
 
@@ -167,8 +147,8 @@ The stack doesn't include monitoring or alerting beyond basic systemd status che
 ## Related Docs
 
 - [Hardware Guide](hardware-guide.md): Framework Desktop specs, why 128GB, power and thermals
-- [Inference Stack](inference-stack.md): Service map, memory budget, model inventory, benchmarks, llama-swap config
-- [Remote Access](remote-access.md): Tailscale VPN, Caddy reverse proxy, SSH patterns
+- [Inference Stack](inference-stack.md): Service map, model inventory, benchmarks
+- [Remote Access](remote-access.md): Options for exposing services over HTTPS
 - [Full Stack Deployment](full-stack-deployment.md): Adding Forgejo and NextCloud to the setup
 
 ---

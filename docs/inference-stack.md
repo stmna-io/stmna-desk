@@ -11,43 +11,16 @@ Everything about what's running, on what port, and how it's configured. Read thi
 | llama-swap | llama-swap | 8081 | Yes | LLM reverse proxy, OpenAI-compatible API, model hot-swap |
 | whisper.cpp (Voice) | whisper-voice | 8083 | Yes | Speech-to-text for Voice pipeline, Vulkan, large-v3-turbo Q5 |
 | whisper.cpp (Signal) | whisper-signal | 8084 | Yes | Speech-to-text for Signal pipeline, Vulkan, large-v3-turbo Q5 |
-| Open WebUI | open-webui | 3000 | Yes | Chat interface with SearXNG tool calling and vault RAG |
+| Open WebUI | open-webui | 3000 | Yes | Chat interface with SearXNG tool calling |
 | n8n | n8n | 5678 | Yes | Workflow automation (Signal, Voice, Vault pipelines) |
-| PostgreSQL + PGVector | postgres-voice | 5432 | Yes | Pipeline queue, cache, embeddings, training pairs, metrics |
-| TEI | text-embeddings | 9003 | Yes | Text embedding inference (pplx-embed-context-v1-0.6b, CPU) |
+| PostgreSQL | postgres-voice | 5432 | Yes | Pipeline queue, cache, training pairs, metrics |
 | Kokoro TTS | kokoro-tts | 9005 | Yes | Text-to-speech, OpenAI-compatible API, CPU-only |
-| Agent Zero | agent-zero | 50001 | Yes | AI agent with vault search and tool use (LAN only) |
+| Agent Zero | agent-zero | 50001 | Yes | AI agent with tool use (LAN only) |
 | SearXNG | searxng | 8888 | Yes | Self-hosted meta-search engine |
 | Crawl4AI | crawl4ai | 11235 | Yes | Web page scraping |
 | Dockge | dockge | 5001 | Yes | Container management UI |
 
 Two separate whisper instances prevent the Voice and Signal pipelines from blocking each other. If you only run one pipeline, a single instance works fine.
-
----
-
-## Memory Budget
-
-| Service / Model | RAM Usage | Notes |
-|-----------------|-----------|-------|
-| qwen3.5-35b-nothink (Q6_K_XL) | ~30GB | Daily driver, swaps in on demand |
-| qwen3.5-122b (Q4_K_XL) | ~68GB | Translation, swaps in on demand |
-| qwen3-4b-voice (Q4_K_M) | ~2.5GB | Always loaded (persistent group) |
-| whisper large-v3-turbo (Q5) x2 | ~7GB | Two instances, always loaded |
-| TEI pplx-embed-context-v1-0.6b | ~1.5GB | Always loaded, CPU inference |
-| Kokoro TTS (82M params) | ~400MB | Always loaded, CPU inference |
-| PostgreSQL + PGVector | ~500MB-1GB | Varies with query load |
-| Open WebUI | ~200MB | Web UI process |
-| n8n | ~300MB | Workflow engine |
-| Other services | ~500MB | SearXNG, Crawl4AI, Agent Zero, Dockge |
-| OS + system overhead | ~4GB | Ubuntu 24.04 Server |
-| **Typical peak (35B loaded)** | **~47GB** | Out of 128GB |
-| **Maximum peak (122B loaded)** | **~85GB** | Tight but workable |
-
-llama-swap manages model loading and eviction. The "daily group" models share a single llama.cpp process slot on port 9001. When you request a model that isn't currently loaded, llama-swap unloads the current one and loads the requested one. This swap takes 10-30 seconds depending on model size.
-
-The "always-on group" models run in persistent llama.cpp processes that never get swapped. The voice model (Qwen3-4B) stays loaded permanently on a dedicated port, ensuring sub-second response times for the Voice pipeline.
-
-Note: `persistent: true` in llama-swap config means "don't evict after use," not "start at boot." Models load on first request.
 
 ---
 
@@ -76,22 +49,10 @@ Each model has a "nothink" variant (same file, different config) that disables c
 
 ### Non-LLM Models
 
-| Service | Model | Port | Dimensions | Purpose |
-|---------|-------|------|------------|---------|
-| TEI | pplx-embed-context-v1-0.6b | 9003 | 1024 | Vault embedding + semantic search (~43ms/query) |
-| whisper.cpp | large-v3-turbo Q5 | 8083/8084 | - | Speech-to-text (Vulkan) |
-| Kokoro TTS | 82M param | 9005 | - | Text-to-speech (af_heart EN, ff_siwis FR) |
-
-### Think vs. Nothink Modes
-
-Every Qwen model has two llama-swap entries pointing to the same GGUF file:
-
-| Mode | Temperature | Top-K | Top-P | Behavior |
-|------|------------|-------|-------|----------|
-| Think | 0.6 | 20 | 0.95 | Chain-of-thought reasoning enabled, longer output |
-| Nothink | 0.2 | 20 | 0.9 | Direct answers, faster, more deterministic |
-
-Nothink uses `--chat-template-kwargs '{"enable_thinking": false}'`. The Signal pipeline runs exclusively on nothink variants to avoid the thinking model exhausting max_tokens on reasoning content and returning empty results.
+| Service | Model | Port | Purpose |
+|---------|-------|------|---------|
+| whisper.cpp | large-v3-turbo Q5 | 8083/8084 | Speech-to-text (Vulkan) |
+| Kokoro TTS | 82M param | 9005 | Text-to-speech (af_heart EN, ff_siwis FR) |
 
 ---
 
@@ -113,38 +74,6 @@ Qwen3.5 models run ~55% slower than equivalently-sized standard transformers. Th
 - [PR #18792](https://github.com/ggml-org/llama.cpp/pull/18792): Alternative approach (stalled)
 
 The quality and tool-calling capabilities of Qwen3.5 justify the speed trade-off for interactive use. For batch processing where speed matters more than capability, Qwen3-30B at 63.8 t/s remains the better choice.
-
----
-
-## Startup Sequence
-
-Services must start in this order (dependencies flow downward):
-
-1. **PostgreSQL** (postgres-voice): database must be ready before anything that queries it
-2. **llama-swap**: inference proxy, starts llama.cpp processes on first request
-3. **whisper-voice, whisper-signal**: no dependencies beyond Vulkan drivers
-4. **TEI** (text-embeddings): loads embedding model on startup
-5. **Kokoro TTS**: loads TTS model on startup
-6. **n8n**: connects to PostgreSQL, llama-swap, whisper, TEI, Kokoro
-7. **Open WebUI**: connects to llama-swap, PostgreSQL (for PGVector RAG)
-8. **SearXNG, Crawl4AI**: independent services
-9. **Agent Zero**: connects to llama-swap, n8n (for vault search)
-10. **Dockge**: management UI, no service dependencies
-
-Startup is managed by a systemd user service with linger enabled:
-
-```bash
-# Check status
-systemctl --user status stmna-stacks.service
-
-# View logs
-journalctl --user -u stmna-stacks.service
-
-# Restart all stacks
-systemctl --user restart stmna-stacks.service
-```
-
-The startup script (`~/start-all-stacks.sh`) uses `podman start <name>` rather than `podman compose up` to avoid container name conflicts on reboot.
 
 ---
 

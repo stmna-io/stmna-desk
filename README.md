@@ -48,10 +48,10 @@ Getting inference running on Strix Halo is well documented. What comes after, co
 │ Open WebUI    n8n       whisper.cpp   Crawl4AI                 │
 │ (Chat+Search) (Pipelines)  (Voice STT) (Web scrape)           │
 │                                                                 │
-│  ┌──────────────┐   ┌────────────┐   ┌────────────────────┐   │
-│  │  SearXNG     │   │  Qdrant    │   │  PostgreSQL        │   │
-│  │  :8888       │   │  :6333     │   │  :5432             │   │
-│  └──────────────┘   └────────────┘   └────────────────────┘   │
+│  ┌──────────────┐   ┌────────────────────┐                    │
+│  │  SearXNG     │   │  PostgreSQL        │                    │
+│  │  :8888       │   │  :5432             │                    │
+│  └──────────────┘   └────────────────────┘                    │
 │                                                                 │
 │  All containers: rootless Podman, stmna-net bridge             │
 └─────────────────────────────────────────────────────────────────┘
@@ -69,7 +69,6 @@ Getting inference running on Strix Halo is well documented. What comes after, co
 | Open WebUI | 3000 | Chat interface with SearXNG tool calling |
 | n8n | 5678 | Workflow automation |
 | PostgreSQL | 5432 | Pipeline queue, training pairs, metrics |
-| Qdrant | 6333 | Vector database |
 | SearXNG | 8888 | Self-hosted meta-search |
 | Crawl4AI | 11235 | Web scraping |
 | Dockge | 5001 | Container management UI |
@@ -132,10 +131,12 @@ The `examples/` directory has individual service compose files to start from. Th
 | Guide | What's in it |
 |-------|-------------|
 | [Hardware Guide](docs/hardware-guide.md) | Framework Desktop setup, Ubuntu 24.04 install, driver notes for Strix Halo |
-| [Inference Stack](docs/inference-stack.md) | llama-swap config reference, model groups, think/nothink modes, benchmark data |
-| [Architecture](docs/architecture.md) | Container topology, rootless Podman, stmna-net networking, startup sequence |
-| [Remote Access](docs/remote-access.md) | Headscale VPN, Caddy bearer token configuration |
+| [Inference Stack](docs/inference-stack.md) | Model inventory, benchmark data, Vulkan kernel notes |
+| [Architecture](docs/architecture.md) | Container topology, rootless Podman, stmna-net networking |
+| [Remote Access](docs/remote-access.md) | Options for exposing services over HTTPS |
 | [Full Stack Deployment](docs/full-stack-deployment.md) | Optional: add Nextcloud and Forgejo to the same machine |
+
+> **Note:** Vault automation, remote access configuration, and knowledge management workflows are part of the private STMNA operational layer and are not included in this repository.
 
 ---
 
@@ -160,7 +161,6 @@ STMNA Desk runs because of the work these projects put in:
 - [Open WebUI](https://github.com/open-webui/open-webui) — the chat interface
 - [SearXNG](https://github.com/searxng/searxng) — self-hosted meta-search
 - [Crawl4AI](https://github.com/unclecode/crawl4ai) — web scraping
-- [Qdrant](https://qdrant.tech) — vector storage
 - [Framework](https://frame.work) — hardware worth documenting because it's worth keeping
 - The Strix Halo community, especially [kyuz0](https://github.com/kyuz0) for early inference container work on this architecture
 
