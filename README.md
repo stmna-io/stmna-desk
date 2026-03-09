@@ -52,46 +52,22 @@ The stack is live, accessible remotely, and provides a single OpenAI-compatible 
 
 ## Architecture
 
+![STMNA Desk Architecture](docs/assets/architecture.svg)
 
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        STMNA Desk                               │
-│                                                                 │
-│  ┌──────────────┐   ┌───────────────────────────────────────┐  │
-│  │  llama-swap  │──▶│  llama.cpp (Vulkan)                   │  │
-│  │  :8081       │   │  loads models on demand               │  │
-│  └──────────────┘   └───────────────────────────────────────┘  │
-│         │                                                       │
-│  ┌──────┴──────┬────────────┬────────────┐                     │
-│  ▼             ▼            ▼            ▼                     │
-│ Open WebUI    n8n       whisper.cpp   Crawl4AI                 │
-│ (Chat+Search) (Pipelines)  (Voice STT) (Web scrape)           │
-│                                                                 │
-│  ┌──────────────┐   ┌────────────────────┐                    │
-│  │  SearXNG     │   │  PostgreSQL        │                    │
-│  │  :8888       │   │  :5432             │                    │
-│  └──────────────┘   └────────────────────┘                    │
-│                                                                 │
-│  All containers: rootless Podman, stmna-net bridge             │
-└─────────────────────────────────────────────────────────────────┘
-         │  Tailscale / Headscale VPN
-         ▼
-    Caddy (VPS) — HTTPS termination, bearer token auth
-         │
-    Remote clients (laptop, mobile, team)
-```
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| llama-swap | 8081 | Model hot-swap proxy, OpenAI-compatible API |
-| whisper.cpp | 8083/8084 | Speech-to-text, Vulkan, separate Voice and Signal instances |
-| Open WebUI | 3000 | Chat interface with SearXNG tool calling |
-| n8n | 5678 | Workflow automation |
-| PostgreSQL | 5432 | Pipeline queue, training pairs, metrics |
-| SearXNG | 8888 | Self-hosted meta-search |
-| Crawl4AI | 11235 | Web scraping |
-| Dockge | 5001 | Container management UI |
+| Service | Port | Tier | Purpose |
+|---------|------|------|---------|
+| llama-swap | 8081 | Core | Model hot-swap proxy, OpenAI-compatible API |
+| Open WebUI | 3000 | Core | Chat interface with SearXNG tool calling |
+| PostgreSQL | 5432 | Core | Pipeline queue, embeddings, metrics |
+| Dockge | 5001 | Core | Container management UI |
+| n8n | 5678 | Automation | Workflow automation (Signal, Voice, Vault) |
+| whisper.cpp | 8083/8084 | Automation | Speech-to-text, Vulkan, Voice + Signal instances |
+| Kokoro TTS | 9005 | Automation | Text-to-speech audio generation |
+| Agent Zero | 50001 | Extended | Autonomous AI agent |
+| Crawl4AI | 11235 | Extended | Web scraping |
+| SearXNG | 8888 | Extended | Self-hosted meta-search |
+| TEI Embeddings | 9003 | Extended | Text embedding inference (PGVector) |
+| Excalidraw | 8585 | Extended | Self-hosted diagram editor |
 
 All containers run rootless under a non-privileged user. No root Podman daemon. Day-to-day operations require no `sudo`.
 

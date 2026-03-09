@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 1540 1081" width="1540" height="1081">
+<rect x="-40" y="-40" width="1540" height="1081" fill="#0F0F1A"/>
+<rect x="30" y="30" width="940" height="820" rx="8" ry="8" fill="rgba(26,26,46,0.9)" stroke="#FF8C42" stroke-width="3" opacity="0.9"/>
+<text x="50" y="61.95" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#F8F9FA" text-anchor="start" dominant-baseline="auto">STMNA Desk_</text>
+<text x="50" y="80.475" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="11" fill="#8892A0" text-anchor="start" dominant-baseline="auto">Framework Desktop 128GB · AMD Ryzen AI Max+ 395 · Rootless Podman</text>
+<text x="54" y="111.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#FF8C42" text-anchor="start" dominant-baseline="auto">CORE</text>
+<rect x="46" y="124" width="908" height="180" rx="8" ry="8" fill="rgba(30,30,53,0.4)" stroke="#FF8C42" stroke-width="1" stroke-dasharray="8 4" opacity="0.4"/>
+<rect x="70" y="140" width="150" height="56" rx="8" ry="8" fill="#2A1A10" stroke="#FF8C42" stroke-width="2"/>
+<rect x="250" y="140" width="200" height="56" rx="8" ry="8" fill="#2A1A10" stroke="#FF8C42" stroke-width="2"/>
+<defs><marker id="arrow-end-elem_0010" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<path d="M 220 168 L 250 168" fill="none" stroke="#FF8C42" stroke-width="2" marker-end="url(#arrow-end-elem_0010)"/>
+<rect x="490" y="140" width="150" height="56" rx="8" ry="8" fill="#2A1A10" stroke="#FF8C42" stroke-width="2"/>
+<rect x="670" y="140" width="150" height="56" rx="8" ry="8" fill="#2A1A10" stroke="#FF8C42" stroke-width="2"/>
+<rect x="490" y="224" width="150" height="56" rx="8" ry="8" fill="#2A1A10" stroke="#FF8C42" stroke-width="2"/>
+<rect x="670" y="224" width="150" height="56" rx="8" ry="8" fill="#2A1A10" stroke="#FF8C42" stroke-width="2"/>
+<text x="54" y="335.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#FFD93D" text-anchor="start" dominant-baseline="auto">AUTOMATION</text>
+<rect x="46" y="348" width="908" height="120" rx="8" ry="8" fill="rgba(30,30,53,0.4)" stroke="#FFD93D" stroke-width="1" stroke-dasharray="8 4" opacity="0.4"/>
+<rect x="70" y="364" width="200" height="56" rx="8" ry="8" fill="#1A1A10" stroke="#FFD93D" stroke-width="2"/>
+<rect x="330" y="364" width="150" height="56" rx="8" ry="8" fill="#1A1A10" stroke="#FFD93D" stroke-width="2"/>
+<rect x="520" y="364" width="150" height="56" rx="8" ry="8" fill="#1A1A10" stroke="#FFD93D" stroke-width="2"/>
+<rect x="710" y="364" width="150" height="56" rx="8" ry="8" fill="#1A1A10" stroke="#FFD93D" stroke-width="2"/>
+<text x="54" y="519.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#8892A0" text-anchor="start" dominant-baseline="auto">EXTENDED</text>
+<rect x="46" y="532" width="908" height="100" rx="8" ry="8" fill="rgba(30,30,53,0.4)" stroke="#8892A0" stroke-width="1" stroke-dasharray="8 4" opacity="0.4"/>
+<rect x="70" y="548" width="150" height="56" rx="8" ry="8" fill="#1A1A20" stroke="#8892A0" stroke-width="2"/>
+<rect x="250" y="548" width="150" height="56" rx="8" ry="8" fill="#1A1A20" stroke="#8892A0" stroke-width="2"/>
+<rect x="430" y="548" width="150" height="56" rx="8" ry="8" fill="#1A1A20" stroke="#8892A0" stroke-width="2"/>
+<rect x="610" y="548" width="150" height="56" rx="8" ry="8" fill="#1A1A20" stroke="#8892A0" stroke-width="2"/>
+<defs><marker id="arrow-end-elem_0039" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<path d="M 145 196 L 560 224" fill="none" stroke="#FF8C42" stroke-width="1" marker-end="url(#arrow-end-elem_0039)"/>
+<defs><marker id="arrow-end-elem_0040" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<path d="M 145 196 L 170 364" fill="none" stroke="#FF8C42" stroke-width="1" marker-end="url(#arrow-end-elem_0040)"/>
+<defs><marker id="arrow-end-elem_0041" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<path d="M 145 196 L 145 548" fill="none" stroke="#FF8C42" stroke-width="1" marker-end="url(#arrow-end-elem_0041)"/>
+<defs><marker id="arrow-end-elem_0042" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FFD93D" stroke-width="1.5"/></marker></defs>
+<path d="M 405 420 L 270 392" fill="none" stroke="#FFD93D" stroke-width="1" marker-end="url(#arrow-end-elem_0042)"/>
+<defs><marker id="arrow-end-elem_0043" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FFD93D" stroke-width="1.5"/></marker></defs>
+<path d="M 595 420 L 270 398" fill="none" stroke="#FFD93D" stroke-width="1" marker-end="url(#arrow-end-elem_0043)"/>
+<defs><marker id="arrow-end-elem_0044" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 505 548 L 560 280" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0044)"/>
+<defs><marker id="arrow-end-elem_0045" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FFD93D" stroke-width="1.5"/></marker></defs>
+<path d="M 270 378 L 490 168" fill="none" stroke="#FFD93D" stroke-width="1" marker-end="url(#arrow-end-elem_0045)"/>
+<defs><marker id="arrow-end-elem_0046" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FFD93D" stroke-width="1.5"/></marker></defs>
+<path d="M 270 398 L 670 252" fill="none" stroke="#FFD93D" stroke-width="1" marker-end="url(#arrow-end-elem_0046)"/>
+<rect x="1040" y="30" width="420" height="490" rx="8" ry="8" fill="rgba(26,34,56,0.9)" stroke="#8892A0" stroke-width="3" opacity="0.9"/>
+<text x="1060" y="61.95" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#F8F9FA" text-anchor="start" dominant-baseline="auto">VPS</text>
+<text x="1060" y="80.475" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="11" fill="#8892A0" text-anchor="start" dominant-baseline="auto">Public Gateway · Stable IP · TLS Termination</text>
+<rect x="1070" y="100" width="150" height="56" rx="8" ry="8" fill="#1A1A10" stroke="#FF8C42" stroke-width="2"/>
+<rect x="1070" y="180" width="360" height="56" rx="8" ry="8" fill="#1A2030" stroke="#8892A0" stroke-width="2"/>
+<rect x="1070" y="270" width="150" height="56" rx="8" ry="8" fill="#1A2030" stroke="#8892A0" stroke-width="2"/>
+<rect x="1250" y="270" width="150" height="56" rx="8" ry="8" fill="#1A2030" stroke="#8892A0" stroke-width="2"/>
+<text x="1290.0" y="122.475" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">VPN Coordinator</text>
+<defs><marker id="arrow-end-elem_0059" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1160 236 L 1140 270" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0059)"/>
+<defs><marker id="arrow-end-elem_0060" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1340 236 L 1325 270" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0060)"/>
+<text x="1140.0" y="344.75" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="10" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">Git hosting</text>
+<text x="1140.0" y="357.25" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="10" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">Vault sync</text>
+<text x="1140.0" y="369.75" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="10" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">Webhooks</text>
+<text x="1320.0" y="344.75" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="10" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">File storage</text>
+<text x="1320.0" y="357.25" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="10" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">Audio delivery</text>
+<text x="1320.0" y="369.75" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="10" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">Book drops</text>
+<rect x="1040" y="560" width="420" height="290" rx="8" ry="8" fill="rgba(45,58,92,0.9)" stroke="#8892A0" stroke-width="3" opacity="0.9"/>
+<text x="1060" y="591.95" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#F8F9FA" text-anchor="start" dominant-baseline="auto">Client Devices</text>
+<text x="1060" y="610.475" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="11" fill="#8892A0" text-anchor="start" dominant-baseline="auto">Standard HTTPS · No VPN Required</text>
+<rect x="1070" y="630" width="150" height="56" rx="8" ry="8" fill="#3A4A6C" stroke="#8892A0" stroke-width="2"/>
+<rect x="1250" y="630" width="150" height="56" rx="8" ry="8" fill="#3A4A6C" stroke="#8892A0" stroke-width="2"/>
+<rect x="1070" y="710" width="150" height="56" rx="8" ry="8" fill="#3A4A6C" stroke="#8892A0" stroke-width="2"/>
+<rect x="1250" y="710" width="150" height="56" rx="8" ry="8" fill="#3A4A6C" stroke="#8892A0" stroke-width="2"/>
+<text x="1250.0" y="794.475" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="11" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">Open WebUI · Agent Zero · n8n · Signal pipeline · Voice API</text>
+<defs><marker id="arrow-end-elem_0075" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<defs><marker id="arrow-start-elem_0075" markerWidth="10" markerHeight="10" refX="1" refY="5" orient="auto-start-reverse"><path d="M 10 0 L 0 5 L 10 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<path d="M 970 130 L 1040 125" fill="none" stroke="#FF8C42" stroke-width="4" marker-end="url(#arrow-end-elem_0075)" marker-start="url(#arrow-start-elem_0075)"/>
+<text x="1023.0" y="114.8" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#FF8C42" text-anchor="middle" dominant-baseline="auto">Headscale</text>
+<text x="1023.0" y="131.05" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#FF8C42" text-anchor="middle" dominant-baseline="auto">VPN Tunnel</text>
+<defs><marker id="arrow-end-elem_0077" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1145 630 L 1160 236" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0077)"/>
+<defs><marker id="arrow-end-elem_0078" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1325 630 L 1340 236" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0078)"/>
+<defs><marker id="arrow-end-elem_0079" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1145 710 L 1120 236" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0079)"/>
+<defs><marker id="arrow-end-elem_0080" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1325 710 L 1380 236" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0080)"/>
+<text x="1425.0" y="551.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">HTTPS</text>
+<text x="500.0" y="824.475" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="11" fill="#8892A0" text-anchor="middle" dominant-baseline="auto">All containers on stmna-net bridge · Rootless Podman · No root daemon</text>
+<text x="1070.0" y="883.15" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Legend</text>
+<rect x="1040" y="894" width="14" height="14" rx="0" ry="0" fill="#FF8C42" stroke="#FF8C42" stroke-width="1"/>
+<text x="1142.0" y="903.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Core Services</text>
+<rect x="1040" y="916" width="14" height="14" rx="0" ry="0" fill="#FFD93D" stroke="#FFD93D" stroke-width="1"/>
+<text x="1142.0" y="925.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Automation</text>
+<rect x="1040" y="938" width="14" height="14" rx="0" ry="0" fill="#8892A0" stroke="#8892A0" stroke-width="1"/>
+<text x="1142.0" y="947.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Extended / Clients</text>
+<defs><marker id="arrow-end-elem_0090" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<defs><marker id="arrow-start-elem_0090" markerWidth="10" markerHeight="10" refX="1" refY="5" orient="auto-start-reverse"><path d="M 10 0 L 0 5 L 10 10" fill="none" stroke="#FF8C42" stroke-width="1.5"/></marker></defs>
+<path d="M 1040 970 L 1080 970" fill="none" stroke="#FF8C42" stroke-width="4" marker-end="url(#arrow-end-elem_0090)" marker-start="url(#arrow-start-elem_0090)"/>
+<text x="1178.0" y="973.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">VPN Tunnel (Headscale)</text>
+<defs><marker id="arrow-end-elem_0092" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#8892A0" stroke-width="1.5"/></marker></defs>
+<path d="M 1040 992 L 1080 992" fill="none" stroke="#8892A0" stroke-width="1" marker-end="url(#arrow-end-elem_0092)"/>
+<text x="1178.0" y="995.7" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">HTTPS / Internal</text>
+<text x="145.0" y="162.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">llama-swap</text>
+<text x="145.0" y="179.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:8081</text>
+<text x="350.0" y="162.8" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="13" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">llama.cpp (Vulkan)</text>
+<text x="350.0" y="179.05" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="13" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">GPU Inference Engine</text>
+<text x="565.0" y="162.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">PostgreSQL</text>
+<text x="565.0" y="179.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:5432</text>
+<text x="745.0" y="162.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Dockge</text>
+<text x="745.0" y="179.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:5001</text>
+<text x="565.0" y="246.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Open WebUI</text>
+<text x="565.0" y="263.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:3000</text>
+<text x="745.0" y="246.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">TEI Embed</text>
+<text x="745.0" y="263.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:9003</text>
+<text x="170.0" y="387.2" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">n8n</text>
+<text x="170.0" y="402.2" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="12" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:5678 · Signal · Voice · Vault</text>
+<text x="405.0" y="386.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">whisper.cpp</text>
+<text x="405.0" y="403.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:8083</text>
+<text x="595.0" y="386.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">whisper.cpp</text>
+<text x="595.0" y="403.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:8084</text>
+<text x="785.0" y="386.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Kokoro TTS</text>
+<text x="785.0" y="403.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:9005</text>
+<text x="145.0" y="570.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Agent Zero</text>
+<text x="145.0" y="587.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:50001</text>
+<text x="325.0" y="570.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Crawl4AI</text>
+<text x="325.0" y="587.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:11235</text>
+<text x="505.0" y="570.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">SearXNG</text>
+<text x="505.0" y="587.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:8888</text>
+<text x="685.0" y="570.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Excalidraw</text>
+<text x="685.0" y="587.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:8585</text>
+<text x="1145.0" y="131.15" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Headscale</text>
+<text x="1250.0" y="210.925" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="13" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Caddy — HTTPS Termination + Bearer Token Auth</text>
+<text x="1145.0" y="292.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Forgejo</text>
+<text x="1145.0" y="309.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:3300</text>
+<text x="1325.0" y="292.4" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Nextcloud</text>
+<text x="1325.0" y="309.9" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">:8090</text>
+<text x="1145.0" y="661.15" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Laptop</text>
+<text x="1325.0" y="661.15" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Mobile</text>
+<text x="1145.0" y="741.15" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Signal App</text>
+<text x="1325.0" y="741.15" font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="14" fill="#F8F9FA" text-anchor="middle" dominant-baseline="auto">Browser</text>
+</svg>
