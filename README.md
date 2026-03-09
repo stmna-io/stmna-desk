@@ -12,7 +12,7 @@
 
   <br/>
 
-  [📖 Architecture](#architecture) · [⚡ Performance](#performance) · [🚀 Quick Start](#quick-start) · [📚 Guides](#guides) · [🔗 Ecosystem](#ecosystem)
+  [🔧 What Runs on It](#what-runs-on-it) · [📖 Architecture](#architecture) · [⚡ Performance](#performance) · [🚀 Quick Start](#quick-start) · [📚 Guides](#guides) · [🔗 Ecosystem](#ecosystem)
 
 </div>
 
@@ -24,9 +24,29 @@
 
 ## What is STMNA Desk?
 
-STMNA Desk is a full self-hosted AI stack running on a Framework Desktop 128GB (AMD Ryzen AI Max+ 395). Ten services, rootless containers, Ubuntu 24.04 LTS. The inference layer (llama-swap + llama.cpp, Vulkan) serves as a shared backend for everything on the machine: Open WebUI for interactive chat with web search, n8n for workflow automation, whisper.cpp for speech-to-text. Everything talks to everything. Nothing leaves the network.
+STMNA Desk is a full self-hosted AI stack running on a Framework Desktop with 128GB unified memory (AMD Ryzen AI Max+ 395). It runs local LLM inference, autonomous AI agents, speech-to-text and content ingestion pipelines, cloud storage, and a chat interface with RAG over your own documents. Everything runs simultaneously, everything talks to everything, and nothing leaves the network thanks to private and secure rootless containers on Ubuntu 24.04 LTS.
 
-Getting inference running on Strix Halo is well documented. What comes after, connecting the LLM to a web scraper, a knowledge base, a voice pipeline, a workflow engine, is where documentation gets thin. This repo is what we built to fill that gap. Every decision has a reason, and the reasons are in `/docs/`.
+Personal AI workstations have become a reality with open-weight models that compete with frontier cloud APIs on real benchmarks, a mature open-source application ecosystem, and hardware-agnostic inference through Vulkan. Qwen3.5-35B runs at 29 tokens per second on this hardware (even before upcoming optimisations). The 122B variant beats GPT-5 mini on tool use by a 30% margin. These are production models running daily on a machine that sits dead silent on a desk, draws under 200 watts, costs a fraction of a single year of cloud API bills while ensuring full data sovereignty.
+
+The stack is live, accessible remotely, and provides a single OpenAI-compatible API serving inference to every other service. Every architectural decision has been tested and documented with rationale in [`/docs/`](docs/). What STMNA Desk unlocks is below.
+
+---
+
+## What Runs on It
+
+🧠 **Local LLM Inference** — Run state-of-the-art open-weight models like Qwen3.5-35B and 122B locally and always-warm lightweight models for low-latency tasks like speech-to-text correction. (llama-swap, llama.cpp, Vulkan)
+
+🗨️ **Interactive Chat with RAG** — Ask questions, search the web, and query your own documents through a local chat interface with retrieval-augmented generation. (Open WebUI, SearXNG)
+
+📥 **Content Ingestion + Audio Summaries** — Send a YouTube video, a URL, or a full book via Signal messenger or Nextcloud and get a structured summary in your vault with a voice memo version. Handles summarization, translation (full ebooks!) and TTS. ([STMNA Signal](https://github.com/stmna-io/stmna-signal))
+
+🎙️ **Self-Improving Speech-to-Text** — Push-to-talk dictation from Linux or Android with Whisper transcription, LLM-powered correction, and automatic training pair collection for fine-tuning. ([STMNA Voice](https://github.com/stmna-io/stmna-voice))
+
+🤖 **Autonomous AI Agents** — Run Agent Zero against local inference with full web access for deep research, content scraping, and recurring scheduled tasks. Set up proactive monitoring jobs, automated report generation, and multi-step problem solving with no API costs. (Agent Zero)
+
+⚡ **Workflow Automation** — Chain LLM calls, web scraping, and database writes into automated pipelines. This is the orchestration layer that powers STMNA Signal and STMNA Voice behind the scenes. (n8n, Crawl4AI, PostgreSQL)
+
+🏠 **Self-Hosted Infrastructure** — Private git forge with full version history for your notes, configs, and code. Sovereign cloud storage that doubles as an ingestion endpoint for STMNA Signal. No third-party accounts required. (Forgejo, Nextcloud)
 
 ---
 
