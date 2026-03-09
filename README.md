@@ -18,7 +18,7 @@
 
 ---
 
-<!-- TODO: Hero GIF — OWU inference with Qwen 3.5 + SearXNG tool calling (SB recording session) -->
+
 
 ---
 
@@ -32,7 +32,7 @@ Getting inference running on Strix Halo is well documented. What comes after, co
 
 ## Architecture
 
-<!-- TODO: Proper architecture diagram with brand colors (SB-10 design assets session) -->
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
