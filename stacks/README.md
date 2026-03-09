@@ -18,7 +18,6 @@ Reference compose files for every service in the STMNA Desk stack. Each director
 | agent-zero | AI agent | 50001 | Extended |
 | crawl4ai | Web scraping API | 11235 | Extended |
 | searxng | Search engine | 8888 | Extended |
-| excalidraw | Diagram editor | 8585 | Extended |
 
 ## Before you deploy
 
