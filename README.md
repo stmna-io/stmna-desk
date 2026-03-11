@@ -52,35 +52,7 @@ The stack is live, accessible remotely, and provides a single OpenAI-compatible 
 
 ## Architecture
 
-
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        STMNA Desk                               │
-│                                                                 │
-│  ┌──────────────┐   ┌───────────────────────────────────────┐  │
-│  │  llama-swap  │──▶│  llama.cpp (Vulkan)                   │  │
-│  │  :8081       │   │  loads models on demand               │  │
-│  └──────────────┘   └───────────────────────────────────────┘  │
-│         │                                                       │
-│  ┌──────┴──────┬────────────┬────────────┐                     │
-│  ▼             ▼            ▼            ▼                     │
-│ Open WebUI    n8n       whisper.cpp   Crawl4AI                 │
-│ (Chat+Search) (Pipelines)  (Voice STT) (Web scrape)           │
-│                                                                 │
-│  ┌──────────────┐   ┌────────────────────┐                    │
-│  │  SearXNG     │   │  PostgreSQL        │                    │
-│  │  :8888       │   │  :5432             │                    │
-│  └──────────────┘   └────────────────────┘                    │
-│                                                                 │
-│  All containers: rootless Podman, stmna-net bridge             │
-└─────────────────────────────────────────────────────────────────┘
-         │  Tailscale / Headscale VPN
-         ▼
-    Caddy (VPS) — HTTPS termination, bearer token auth
-         │
-    Remote clients (laptop, mobile, team)
-```
+![STMNA Desk Architecture](docs/architecture-v1.svg)
 
 | Service | Port | Purpose |
 |---------|------|---------|
