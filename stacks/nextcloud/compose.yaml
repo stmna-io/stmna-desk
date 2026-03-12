@@ -17,7 +17,7 @@ services:
     ports:
       - "8090:80"  # OPTIONAL: adjust to taste
     volumes:
-      - /home/stmna/data/nextcloud:/var/www/html  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/nextcloud:/var/www/html  # REQUIRED: replace with your data path
     environment:
       - NEXTCLOUD_ADMIN_USER=admin  # REQUIRED: replace with your admin username
       - NEXTCLOUD_ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD_HERE  # REQUIRED: replace with a strong password

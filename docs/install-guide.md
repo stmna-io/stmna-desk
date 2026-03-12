@@ -114,8 +114,8 @@ podman network ls
 
 With the base system, drivers, and Podman configured, you're ready to deploy services. See the individual compose files in [`/stacks/`](../stacks/) for reference configurations, or check the product repos for complete deployment guides:
 
-- [STMNA Signal](https://github.com/stmna-io/stmna-signal) — content ingestion and processing pipeline
-- [STMNA Voice](https://github.com/stmna-io/stmna-voice) — speech-to-text pipeline
+- [STMNA Signal](https://github.com/stmna-io/stmna-signal)  -- content ingestion and processing pipeline
+- [STMNA Voice](https://github.com/stmna-io/stmna-voice)  -- speech-to-text pipeline
 
 Each service has its own `compose.yaml` in the `stacks/` directory with inline comments explaining required and optional configuration values. Deploy them via [Dockge](https://github.com/louislam/dockge) (recommended) or `podman compose up -d`.
 

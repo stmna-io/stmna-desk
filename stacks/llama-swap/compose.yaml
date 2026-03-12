@@ -16,7 +16,7 @@ services:
       - "9001:9001"  # OPTIONAL: additional port for direct model access
       - "9002:9002"  # OPTIONAL: additional port for direct model access
     volumes:
-      - /home/stmna/models:/models  # REQUIRED: replace with your path to GGUF models
+      - /home/YOUR_USER/models:/models  # REQUIRED: replace with your path to GGUF models
       - ./config.yaml:/app/config.yaml  # NO ACTION NEEDED
     # NOTE: GPU passthrough (requires Vulkan drivers on host)
     # Remove devices/group_add/security_opt if running without GPU

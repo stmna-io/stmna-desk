@@ -85,7 +85,7 @@ The vault is designed around portability and composability:
 
 - **Plain text:** Open any file in any text editor, no special tooling required
 - **Version-controlled:** Every change is a git commit with full diff history
-- **Composable:** Other tools (n8n, Claude.ai, agents) interact with plain text via webhooks
+- **Composable:** Other tools (n8n, LLM agents) interact with plain text via webhooks
 - **Portable:** Move to any editor or system by copying a folder
 
 Semantic search can be added on top of the vault using embedding models and a vector database, but the vault itself is the source of truth. If the search layer goes down, the vault is unaffected.
@@ -120,7 +120,7 @@ The knowledge layer is built on an Obsidian vault (markdown files in git), not a
 - **Portability:** Move to any editor or system by copying a folder
 - **Version history:** Every change is a git commit with full diff history
 - **Human-readable:** Open any file in any text editor, no special tooling required
-- **Composable:** Other tools (n8n, Claude.ai, agents) interact with plain text via webhooks
+- **Composable:** Other tools (n8n, LLM agents) interact with plain text via webhooks
 
 The vault is the primary store, not any derived index. Semantic search is a layer on top, not a dependency.
 

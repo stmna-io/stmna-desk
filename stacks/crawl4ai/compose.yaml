@@ -19,7 +19,7 @@ services:
       - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED
       - OPENAI_API_BASE=http://llama-swap:8080/v1  # NO ACTION NEEDED
     volumes:
-      - /home/stmna/data/crawl4ai:/root/.crawl4ai  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/crawl4ai:/root/.crawl4ai  # REQUIRED: replace with your data path
     networks:
       - default
       - stmna-net

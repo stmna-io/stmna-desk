@@ -34,19 +34,19 @@ The stack is live, accessible remotely, and provides a single OpenAI-compatible 
 
 ## What Runs on It
 
-🧠 **Local LLM Inference** — Run state-of-the-art open-weight models like Qwen3.5-35B and 122B locally and always-warm lightweight models for low-latency tasks like speech-to-text correction. (llama-swap, llama.cpp, Vulkan)
+🧠 **Local LLM Inference**  -- Run state-of-the-art open-weight models like Qwen3.5-35B and 122B locally and always-warm lightweight models for low-latency tasks like speech-to-text correction. (llama-swap, llama.cpp, Vulkan)
 
-🗨️ **Interactive Chat with RAG** — Ask questions, search the web, and query your own documents through a local chat interface with retrieval-augmented generation. (Open WebUI, SearXNG)
+🗨️ **Interactive Chat with RAG**  -- Ask questions, search the web, and query your own documents through a local chat interface with retrieval-augmented generation. (Open WebUI, SearXNG)
 
-📥 **Content Ingestion + Audio Summaries** — Send a YouTube video, a URL, or a full book via Signal messenger or Nextcloud and get a structured summary in your vault with a voice memo version. Handles summarization, translation (full ebooks!) and TTS. ([STMNA Signal](https://github.com/stmna-io/stmna-signal))
+📥 **Content Ingestion + Audio Summaries**  -- Send a YouTube video, a URL, or a full book via Signal messenger or Nextcloud and get a structured summary in your vault with a voice memo version. Handles summarization, translation (full ebooks!) and TTS. ([STMNA Signal](https://github.com/stmna-io/stmna-signal))
 
-🎙️ **Self-Improving Speech-to-Text** — Push-to-talk dictation from Linux or Android with Whisper transcription, LLM-powered correction, and automatic training pair collection for fine-tuning. ([STMNA Voice](https://github.com/stmna-io/stmna-voice))
+🎙️ **Self-Improving Speech-to-Text**  -- Push-to-talk dictation from Linux or Android with Whisper transcription, LLM-powered correction, and automatic training pair collection for fine-tuning. ([STMNA Voice](https://github.com/stmna-io/stmna-voice))
 
-🤖 **Autonomous AI Agents** — Run Agent Zero against local inference with full web access for deep research, content scraping, and recurring scheduled tasks. Set up proactive monitoring jobs, automated report generation, and multi-step problem solving with no API costs. (Agent Zero)
+🤖 **Autonomous AI Agents**  -- Run Agent Zero against local inference with full web access for deep research, content scraping, and recurring scheduled tasks. Set up proactive monitoring jobs, automated report generation, and multi-step problem solving with no API costs. (Agent Zero)
 
-⚡ **Workflow Automation** — Chain LLM calls, web scraping, and database writes into automated pipelines. This is the orchestration layer that powers STMNA Signal and STMNA Voice behind the scenes. (n8n, Crawl4AI, PostgreSQL)
+⚡ **Workflow Automation**  -- Chain LLM calls, web scraping, and database writes into automated pipelines. This is the orchestration layer that powers STMNA Signal and STMNA Voice behind the scenes. (n8n, Crawl4AI, PostgreSQL)
 
-🏠 **Self-Hosted Infrastructure** — Private git forge with full version history for your notes, configs, and code. Sovereign cloud storage that doubles as an ingestion endpoint for STMNA Signal. No third-party accounts required. (Forgejo, Nextcloud)
+🏠 **Self-Hosted Infrastructure**  -- Private git forge with full version history for your notes, configs, and code. Sovereign cloud storage that doubles as an ingestion endpoint for STMNA Signal. No third-party accounts required. (Forgejo, Nextcloud)
 
 ---
 
@@ -145,15 +145,15 @@ The `examples/` directory has individual service compose files to start from. Th
 
 STMNA Desk runs because of the work these projects put in:
 
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) by Georgi Gerganov — the inference engine underneath everything
-- [whisper.cpp](https://github.com/ggerganov/whisper.cpp) by Georgi Gerganov — local STT that actually works on AMD
-- [llama-swap](https://github.com/mostlygeek/llama-swap) by mostlygeek — model hot-swapping without the complexity
-- [n8n](https://n8n.io) — workflow automation that makes complex pipelines visual and modifiable
-- [Podman](https://podman.io) — rootless containers that made the security model here possible
-- [Open WebUI](https://github.com/open-webui/open-webui) — the chat interface
-- [SearXNG](https://github.com/searxng/searxng) — self-hosted meta-search
-- [Crawl4AI](https://github.com/unclecode/crawl4ai) — web scraping
-- [Framework](https://frame.work) — hardware worth documenting because it's worth keeping
+- [llama.cpp](https://github.com/ggerganov/llama.cpp) by Georgi Gerganov  -- the inference engine underneath everything
+- [whisper.cpp](https://github.com/ggerganov/whisper.cpp) by Georgi Gerganov  -- local STT that actually works on AMD
+- [llama-swap](https://github.com/mostlygeek/llama-swap) by mostlygeek  -- model hot-swapping without the complexity
+- [n8n](https://n8n.io)  -- workflow automation that makes complex pipelines visual and modifiable
+- [Podman](https://podman.io)  -- rootless containers that made the security model here possible
+- [Open WebUI](https://github.com/open-webui/open-webui)  -- the chat interface
+- [SearXNG](https://github.com/searxng/searxng)  -- self-hosted meta-search
+- [Crawl4AI](https://github.com/unclecode/crawl4ai)  -- web scraping
+- [Framework](https://frame.work)  -- hardware worth documenting because it's worth keeping
 - The Strix Halo community, especially [kyuz0](https://github.com/kyuz0) for early inference container work on this architecture
 
 ---
@@ -170,7 +170,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE)
+Apache 2.0  -- see [LICENSE](LICENSE)
 
 ---
 

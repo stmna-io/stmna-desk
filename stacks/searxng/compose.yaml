@@ -17,7 +17,7 @@ services:
     ports:
       - "8888:8080"  # OPTIONAL: adjust to taste
     volumes:
-      - /home/stmna/data/searxng:/etc/searxng:rw  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/searxng:/etc/searxng:rw  # REQUIRED: replace with your data path
     environment:
       - SEARXNG_BASE_URL=http://YOUR_IP:8888/  # REQUIRED: replace with your server IP or domain
       # NOTE: literal $ signs must be doubled ($$) in compose files

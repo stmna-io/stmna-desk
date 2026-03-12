@@ -58,7 +58,7 @@ The trade-off is real though. Standard transformer models run well on Vulkan. Qw
 | `~/stacks/` | Compose files for all services (one directory per stack) | ~50MB |
 | `~/models/` | LLM and whisper model files (GGUF format) | ~107GB |
 | `~/data/` | Service data volumes (n8n, PostgreSQL, Open WebUI, etc.) | ~5-20GB |
-| `/data/second-brain/` | Obsidian vault on disk (mounted read-only in n8n) | ~500MB |
+| `/path/to/your/vault/` | Obsidian vault on disk (mounted read-only in n8n) | ~500MB |
 
 Models, stack configs, and data volumes are deliberately separated. Models are large, static files that rarely change. Stack configs are small and version-controlled. Data volumes grow over time and need backup consideration. Keeping them in separate paths makes backup, migration, and storage monitoring straightforward.
 

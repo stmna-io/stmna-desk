@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: voice  # REQUIRED: replace with your database username
       POSTGRES_PASSWORD: YOUR_POSTGRES_PASSWORD  # REQUIRED: replace with a strong password
     volumes:
-      - /home/stmna/data/postgres:/var/lib/postgresql/data  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/postgres:/var/lib/postgresql/data  # REQUIRED: replace with your data path
     networks:
       - default
       - stmna-net

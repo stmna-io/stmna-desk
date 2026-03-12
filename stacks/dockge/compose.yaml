@@ -17,10 +17,10 @@ services:
       # NOTE: adjust /run/user/XXXX to match your UID (run: id -u)
       - /run/user/1000/podman/podman.sock:/var/run/docker.sock  # REQUIRED: replace UID if not 1000
       - dockge_data:/app/data  # NO ACTION NEEDED
-      - /home/stmna/stacks:/home/stmna/stacks  # REQUIRED: replace with your stacks path
+      - /home/YOUR_USER/stacks:/home/YOUR_USER/stacks  # REQUIRED: replace with your stacks path
 
     environment:
-      - DOCKGE_STACKS_DIR=/home/stmna/stacks  # REQUIRED: replace with your stacks path
+      - DOCKGE_STACKS_DIR=/home/YOUR_USER/stacks  # REQUIRED: replace with your stacks path
 
 volumes:
   dockge_data:

@@ -9,9 +9,9 @@ your services need to be reachable from the internet over HTTPS.
 
 | Approach | Complexity | Sovereignty | Best For |
 |----------|-----------|-------------|----------|
-| Cloudflare Tunnels | Low | Medium — traffic routes through Cloudflare | Quick setup, free tier available |
-| Tailscale Funnel | Low | Medium — traffic routes through Tailscale | Already using Tailscale for device mesh |
-| VPS + Reverse Proxy | Medium | High — you control the entire path | Production deployments, custom domains |
+| Cloudflare Tunnels | Low | Medium  -- traffic routes through Cloudflare | Quick setup, free tier available |
+| Tailscale Funnel | Low | Medium  -- traffic routes through Tailscale | Already using Tailscale for device mesh |
+| VPS + Reverse Proxy | Medium | High  -- you control the entire path | Production deployments, custom domains |
 
 ### Cloudflare Tunnels
 Install `cloudflared` on your machine, create a tunnel, point it at your local service ports.

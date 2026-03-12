@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:8080"  # OPTIONAL: adjust to taste
     volumes:
-      - /home/stmna/data/open-webui:/app/backend/data  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/open-webui:/app/backend/data  # REQUIRED: replace with your data path
     environment:
       - OPENAI_API_BASE_URL=http://llama-swap:8080/v1  # REQUIRED: replace with your llama-swap endpoint
       - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED

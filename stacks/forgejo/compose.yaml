@@ -15,7 +15,7 @@ services:
       - "3300:3000"  # OPTIONAL: HTTP web UI (avoid conflict with Open WebUI on 3000)
       - "2222:22"  # OPTIONAL: SSH for git over SSH (remove if not needed)
     volumes:
-      - /home/stmna/data/forgejo:/data  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/forgejo:/data  # REQUIRED: replace with your data path
     environment:
       - USER_UID=1000  # NO ACTION NEEDED
       - USER_GID=1000  # NO ACTION NEEDED

@@ -7,9 +7,9 @@ Thank you for your interest in contributing to STMNA Desk!
 ## What We're Looking For
 
 - **Benchmark data** on different AMD hardware (Strix Halo variants, APUs, dGPUs)
-- **Documentation improvements** — corrections, clarifications, translations
+- **Documentation improvements**  -- corrections, clarifications, translations
 - **Compose snippets** for additional services that fit the sovereign stack
-- **Bug reports** — especially hardware-specific issues on non-Framework AMD systems
+- **Bug reports**  -- especially hardware-specific issues on non-Framework AMD systems
 
 ## How to Contribute
 

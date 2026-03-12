@@ -22,7 +22,7 @@ services:
       - /root/.cache/mesa_shader_cache
       - /app
     volumes:
-      - /home/stmna/models:/models:ro  # REQUIRED: replace with your path to whisper models
+      - /home/YOUR_USER/models:/models:ro  # REQUIRED: replace with your path to whisper models
     command:
       - whisper-server
       - "-m"
@@ -56,7 +56,7 @@ services:
       - /root/.cache/mesa_shader_cache
       - /app
     volumes:
-      - /home/stmna/models:/models:ro  # REQUIRED: replace with your path to whisper models
+      - /home/YOUR_USER/models:/models:ro  # REQUIRED: replace with your path to whisper models
     command:
       - whisper-server
       - "-m"

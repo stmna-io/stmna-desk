@@ -28,7 +28,7 @@ services:
       - EXECUTIONS_TIMEOUT=-1  # NO ACTION NEEDED
       - N8N_SECURE_COOKIE=false  # NO ACTION NEEDED
     volumes:
-      - /home/stmna/data/n8n:/home/node/.n8n  # NO ACTION NEEDED
+      - /home/YOUR_USER/data/n8n:/home/node/.n8n  # REQUIRED: replace with your data path
     networks:
       - default
       - stmna-net
