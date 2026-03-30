@@ -1,0 +1,28 @@
+# Dockge (Container Management UI)
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  dockge:
+    # INFO: Web UI for managing Podman compose stacks
+    image: docker.io/louislam/dockge:1
+    container_name: dockge
+    restart: always
+    ports:
+      - "5001:5001"  # OPTIONAL: adjust to taste
+    volumes:
+      # NOTE: adjust /run/user/XXXX to match your UID (run: id -u)
+      - /run/user/1000/podman/podman.sock:/var/run/docker.sock  # REQUIRED: replace UID if not 1000
+      - dockge_data:/app/data  # NO ACTION NEEDED
+      - /home/YOUR_USER/stacks:/home/YOUR_USER/stacks  # REQUIRED: replace with your stacks path
+
+    environment:
+      - DOCKGE_STACKS_DIR=/home/YOUR_USER/stacks  # REQUIRED: replace with your stacks path
+
+volumes:
+  dockge_data:
+    driver: local
+    name: dockge_data

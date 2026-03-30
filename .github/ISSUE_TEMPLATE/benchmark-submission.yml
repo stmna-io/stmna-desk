@@ -1,0 +1,74 @@
+name: Benchmark Submission
+about: Share inference speeds from your hardware
+title: "[Benchmark] "
+labels: ["benchmark", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got benchmark numbers on your setup? Submit them here.
+        This data helps everyone pick the right hardware and model combinations.
+
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: Manufacturer, model, and RAM
+      placeholder: "Framework Desktop, AMD Ryzen AI Max+ 395, 128GB"
+    validations:
+      required: true
+
+  - type: input
+    id: os_kernel
+    attributes:
+      label: OS and kernel
+      description: Output of `lsb_release -ds` and `uname -r`
+      placeholder: "Ubuntu 24.04.3 LTS, 6.17.0-14-generic"
+    validations:
+      required: true
+
+  - type: input
+    id: llamacpp
+    attributes:
+      label: llama.cpp build
+      description: Build number or commit hash
+      placeholder: "b8182 / b8369"
+    validations:
+      required: true
+
+  - type: input
+    id: backend
+    attributes:
+      label: Backend
+      description: Vulkan, ROCm, or other
+      placeholder: "Vulkan-RADV"
+    validations:
+      required: true
+
+  - type: textarea
+    id: results
+    attributes:
+      label: Results
+      description: |
+        One row per model. Include model name, quantization, context length, and tokens per second (TG).
+        Prompt processing speed (PP) is a bonus if you have it.
+      placeholder: |
+        | Model | Quant | Context | TG (t/s) | PP (t/s) |
+        |-------|-------|---------|----------|----------|
+        | Qwen3.5-35B-A3B | Q6_K_XL | 65536 | 29 | 198 |
+        | Qwen3-30B-A3B | Q6_K_XL | 65536 | 66 | 210 |
+    validations:
+      required: true
+
+  - type: input
+    id: flags
+    attributes:
+      label: llama-server flags
+      description: Any non-default flags used
+      placeholder: "-fa on --no-mmap -ngl 99"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything relevant. Thermal throttling, GTT config, stability observations.

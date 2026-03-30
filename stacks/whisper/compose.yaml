@@ -1,0 +1,81 @@
+# Whisper Server (Speech-to-Text)
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  whisper-voice:
+    # INFO: Dedicated whisper instance for STMNA_Voice (short clips, low latency)
+    image: ghcr.io/ggml-org/whisper.cpp:main-vulkan
+    container_name: whisper-voice
+    restart: always
+    read_only: true
+    init: true
+    ports:
+      - "8083:8083"  # OPTIONAL: adjust to taste
+    # NOTE: GPU passthrough (remove if no GPU)
+    #devices:
+    #  - /dev/dri:/dev/dri
+    tmpfs:
+      - /root/.cache/mesa_shader_cache
+      - /app
+    volumes:
+      - /home/YOUR_USER/models:/models:ro  # REQUIRED: replace with your path to whisper models
+    command:
+      - whisper-server
+      - "-m"
+      - "/models/ggml-large-v3-turbo-q5_0.bin"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8083"
+      - "--inference-path"
+      - "/v1/audio/transcriptions"
+      - "--convert"
+      - "-t"
+      - "4"
+      - "-fa"
+    networks:
+      - default
+      - stmna-net
+
+  whisper-signal:
+    # INFO: Dedicated whisper instance for STMNA_Signal (long YouTube/podcast transcription)
+    image: ghcr.io/ggml-org/whisper.cpp:main-vulkan
+    container_name: whisper-signal
+    restart: always
+    read_only: true
+    init: true
+    ports:
+      - "8084:8084"  # OPTIONAL: adjust to taste
+    #devices:
+    #  - /dev/dri:/dev/dri
+    tmpfs:
+      - /root/.cache/mesa_shader_cache
+      - /app
+    volumes:
+      - /home/YOUR_USER/models:/models:ro  # REQUIRED: replace with your path to whisper models
+    command:
+      - whisper-server
+      - "-m"
+      - "/models/ggml-large-v3-turbo-q5_0.bin"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8084"
+      - "--inference-path"
+      - "/v1/audio/transcriptions"
+      - "--convert"
+      - "-t"
+      - "4"
+      - "-fa"
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

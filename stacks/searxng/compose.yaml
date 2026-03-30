@@ -1,0 +1,31 @@
+# SearXNG (Search Engine)
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+# NOTE: SearXNG is not on stmna-net because it does not need
+# to be reached by other containers. n8n calls it via host port.
+
+x-podman:
+  in_pod: false
+
+services:
+  searxng:
+    # INFO: Privacy-respecting metasearch engine
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
+    restart: always
+    ports:
+      - "8888:8080"  # OPTIONAL: adjust to taste
+    volumes:
+      - /home/YOUR_USER/data/searxng:/etc/searxng:rw  # REQUIRED: replace with your data path
+    environment:
+      - SEARXNG_BASE_URL=http://YOUR_IP:8888/  # REQUIRED: replace with your server IP or domain
+      - SEARXNG_SECRET=YOUR_SECRET_HERE  # REQUIRED: replace with a secret (openssl rand -hex 16)
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+
+networks: {}

@@ -1,0 +1,30 @@
+# Crawl4AI (Web Scraping)
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  crawl4ai:
+    # INFO: Web scraping API for extracting article content (used by STMNA_Signal Worker)
+    image: docker.io/unclecode/crawl4ai:latest
+    container_name: crawl4ai
+    restart: always
+    ports:
+      - "11235:11235"  # OPTIONAL: adjust to taste
+    environment:
+      - CRAWL4AI_API_TOKEN=YOUR_TOKEN_HERE  # REQUIRED: replace with a token (openssl rand -hex 16)
+      - MAX_CONCURRENT_TASKS=5  # OPTIONAL: adjust to taste
+      - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED
+      - OPENAI_API_BASE=http://llama-swap:8080/v1  # NO ACTION NEEDED
+    volumes:
+      - /home/YOUR_USER/data/crawl4ai:/root/.crawl4ai  # REQUIRED: replace with your data path
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

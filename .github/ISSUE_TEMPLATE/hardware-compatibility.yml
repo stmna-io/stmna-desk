@@ -1,0 +1,86 @@
+name: Hardware Compatibility Report
+about: Report how the stack runs on your AMD hardware
+title: "[Hardware] "
+labels: ["hardware", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Running STMNA_Desk on non-Framework hardware? We want to hear about it.
+        This helps the community understand which systems work and what needs adjustment.
+
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: Manufacturer and model
+      placeholder: "Corsair AI Workstation 300 / GMKtec EVO-X2 / custom build"
+    validations:
+      required: true
+
+  - type: input
+    id: cpu
+    attributes:
+      label: CPU/APU
+      description: Exact model
+      placeholder: "AMD Ryzen AI Max+ 395"
+    validations:
+      required: true
+
+  - type: input
+    id: memory
+    attributes:
+      label: Memory
+      description: Total RAM and type
+      placeholder: "128GB LPDDR5X / 96GB LPDDR5X"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS and kernel
+      description: Output of `lsb_release -ds` and `uname -r`
+      placeholder: "Ubuntu 24.04.3 LTS, 6.17.0-14-generic"
+    validations:
+      required: true
+
+  - type: textarea
+    id: gtt
+    attributes:
+      label: GPU memory verification
+      description: |
+        Output of these two commands:
+        ```
+        cat /proc/cmdline
+        cat /sys/class/drm/card1/device/mem_info_gtt_total
+        ```
+    validations:
+      required: true
+
+  - type: dropdown
+    id: vulkan
+    attributes:
+      label: Vulkan working?
+      options:
+        - "Yes, vulkaninfo shows device"
+        - "Partially (some issues)"
+        - "No, vulkaninfo shows no devices"
+    validations:
+      required: true
+
+  - type: textarea
+    id: services
+    attributes:
+      label: Which services did you deploy?
+      description: List the stacks you got running and any issues per service.
+      placeholder: |
+        llama-swap: working, Qwen3.5-35B loads fine
+        whisper: working
+        n8n: had to change X because Y
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
+      description: Anything else useful. BIOS settings, driver versions, workarounds you found.

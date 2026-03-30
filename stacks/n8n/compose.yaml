@@ -1,0 +1,39 @@
+# n8n Workflow Automation
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  n8n:
+    # Pre-built image for STMNA_Signal and STMNA_Voice, pulls from ghcr.io automatically
+    # To build locally instead: see docker/n8n/README.md
+    image: ghcr.io/stmna-io/stmna-n8n:latest
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678"  # OPTIONAL: adjust to taste
+    environment:
+      - N8N_HOST=0.0.0.0  # NO ACTION NEEDED
+      - N8N_PORT=5678  # NO ACTION NEEDED
+      - N8N_PROTOCOL=http  # NO ACTION NEEDED
+      - WEBHOOK_URL=http://YOUR_IP:5678/  # REQUIRED: replace with your public URL or local IP
+      - N8N_RUNNERS_ENABLED=true  # NO ACTION NEEDED
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path  # NO ACTION NEEDED
+      - GENERIC_TIMEZONE=YOUR_TIMEZONE  # OPTIONAL: your timezone (e.g. Europe/Berlin, America/New_York, default: UTC)
+      - N8N_EXECUTE_COMMAND_ENABLED=true  # NO ACTION NEEDED
+      - N8N_RUNNERS_HEARTBEAT_INTERVAL=1800  # NO ACTION NEEDED
+      - N8N_RUNNERS_TASK_TIMEOUT=43200  # NO ACTION NEEDED
+      - EXECUTIONS_TIMEOUT=-1  # NO ACTION NEEDED
+      - N8N_SECURE_COOKIE=false  # NO ACTION NEEDED
+    volumes:
+      - /home/YOUR_USER/data/n8n:/home/node/.n8n  # REQUIRED: replace with your data path
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

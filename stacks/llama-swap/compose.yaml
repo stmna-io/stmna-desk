@@ -1,0 +1,28 @@
+# llama-swap (LLM Reverse Proxy)
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  llama-swap:
+    # INFO: Routes LLM requests to the right model, manages VRAM, hot-swaps on demand
+    image: ghcr.io/mostlygeek/llama-swap:vulkan
+    container_name: llama-swap
+    restart: always
+    ports:
+      - "8081:8080"  # OPTIONAL: main proxy port
+      - "9001:9001"  # OPTIONAL: additional port for direct model access
+      - "9002:9002"  # OPTIONAL: additional port for direct model access
+    volumes:
+      - /home/YOUR_USER/models:/models  # REQUIRED: replace with your path to GGUF models
+      - ./config.yaml:/app/config.yaml  # NO ACTION NEEDED
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true

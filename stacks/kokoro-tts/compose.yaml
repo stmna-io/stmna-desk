@@ -1,0 +1,27 @@
+# Kokoro TTS (Text-to-Speech)
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  kokoro-tts:
+    # INFO: Text-to-speech engine (OpenAI-compatible API). Called by Signal Worker via HTTP.
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4
+    container_name: kokoro-tts
+    restart: always
+    ports:
+      - "9005:8880"  # OPTIONAL: adjust to taste
+    environment:
+      - USE_GPU=false  # NO ACTION NEEDED
+      - DEVICE_TYPE=cpu  # NO ACTION NEEDED
+      - API_LOG_LEVEL=INFO  # NO ACTION NEEDED
+      - DISABLE_LOCAL_SAVING=true  # NO ACTION NEEDED
+      - DEFAULT_VOICE=af_heart  # OPTIONAL: default voice (af_heart=English A+, ff_siwis=French B-)
+    networks:
+      - stmna-net
+
+networks:
+  stmna-net:
+    external: true

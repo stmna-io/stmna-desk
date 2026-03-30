@@ -1,0 +1,29 @@
+# Open WebUI
+# Part of STMNA_Desk — https://github.com/stmna-io/stmna-desk
+# Base system setup: docs/install-guide.md | All stacks: stacks/README.md
+
+x-podman:
+  in_pod: false
+
+services:
+  open-webui:
+    # INFO: Chat UI for interacting with local LLMs via llama-swap
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    ports:
+      - "3000:8080"  # OPTIONAL: adjust to taste
+    volumes:
+      - /home/YOUR_USER/data/open-webui:/app/backend/data  # REQUIRED: replace with your data path
+    environment:
+      - OPENAI_API_BASE_URL=http://llama-swap:8080/v1  # REQUIRED: replace with your llama-swap endpoint
+      - OPENAI_API_KEY=sk-none  # NO ACTION NEEDED
+      - WEBUI_AUTH=true  # OPTIONAL: set to false for single-user mode
+    networks:
+      - default
+      - stmna-net
+
+networks:
+  default: {}
+  stmna-net:
+    external: true
